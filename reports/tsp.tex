@@ -1,0 +1,46 @@
+\documentclass[a4paper]{report}
+\input{./preamble.tex}
+% \usepackage{cmbright}
+
+\usepackage{faktor}
+
+\usepackage[backend=bibtex,sorting=nyvt,block=none,defernumbers=true,autolang=other]{biblatex}
+\addbibresource{refs_tsp.bib}
+
+\makeatletter
+\DeclareRobustCommand*{\mfaktor}[3][]
+{
+   { \mathpalette{\mfaktor@impl@}{{#1}{#2}{#3}} }
+}
+\newcommand*{\mfaktor@impl@}[2]{\mfaktor@impl#1#2}
+\newcommand*{\mfaktor@impl}[4]{
+   \settoheight{\faktor@zaehlerhoehe}{\ensuremath{#1#2{#3}}}%
+   \settoheight{\faktor@nennerhoehe}{\ensuremath{#1#2{#4}}}%
+      \raisebox{-0.5\faktor@zaehlerhoehe}{\ensuremath{#1#2{#3}}}%
+      \mkern-4mu\diagdown\mkern-5mu%
+      \raisebox{0.5\faktor@nennerhoehe}{\ensuremath{#1#2{#4}}}%
+}
+\makeatother
+
+\DeclareMathOperator{\Ker}{ker}
+\DeclareMathOperator{\im}{Im}
+
+\title{TÌM HIỂU BÀI TOÁN NGƯỜI GIAO HÀNG}
+\author{Lê Nhựt Nam$^1$$^2$}
+\date{
+    $^1$Khoa Toán - Tin học, Trường Đại học Khoa học Tự nhiên\\%
+    $^2$Đại học Quốc gia TP Hồ Chí Minh, Việt Nam\\%
+    \vfill
+    \today
+}
+
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+    % start lessons
+
+    % Tài liệu tham khảo
+    \refs
+    \nocite{*}
+\end{document}
