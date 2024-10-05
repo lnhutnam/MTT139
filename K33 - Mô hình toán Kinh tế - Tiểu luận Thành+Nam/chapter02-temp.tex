@@ -1,0 +1,62 @@
+\chapter{CƠ SỞ LÝ THUYẾT}
+Chương này cung cấp nền tảng lý thuyết cho bài toán Knapsack, bao gồm các định nghĩa, phân loại và các ứng dụng lý thuyết của bài toán. Nó giúp người đọc nắm bắt được các khái niệm cơ bản trước khi đi sâu vào các phương pháp giải và ứng dụng thực tiễn.
+\section{Phát biểu bài toán}
+Bài toán Knapsack (còn gọi là bài toán cái ba-lô) là một trong những bài toán cơ bản trong lý thuyết tối ưu hóa tổ hợp. Đặt bài toán trong bối cảnh chọn các vật phẩm có giá trị và trọng lượng khác nhau để bỏ vào một cái túi có giới hạn dung lượng sao cho tổng giá trị của các vật phẩm trong túi là lớn nhất mà không vượt quá trọng lượng giới hạn. Bài toán được phát biểu  như sau:
+
+Cho một tập hợp gồm $n$ vật phẩm, mỗi vật phẩm chứa hai thông số như sau:
+\begin{itemize}
+    \item Trọng lượng của vật phẩm, ký hiệu là $w_i$.
+    \item Giá trị của vật phẩm, ký hiệu là $p_i$.
+\end{itemize}
+Mục tiêu của chúng ta là chọn một số vật phẩm sao cho tổng trọng lượng của các vật phẩm được chọn không vượt quá dung lượng của túi $W$, và tổng giá trị của chúng là lớn nhất.
+
+Bài toán này có thể được biểu diễn dưới dạng phương trình tối ưu hóa:
+\[
+    \max \sum^n_i p_ix_i
+\]
+thoả mãn ràng buộc:
+\[
+    \sum^n_i w_ix_i \quad \text{sao cho} \quad x_i \in \{0,1\}
+\]
+
+Ở đây $x_i$ là biến nhị phân, cho biết liệu vật phẩm $i$
+có được chọn (1) hay không (0).
+\section{Phân loại bài toán Knapsack}
+Bài toán Knapsack có nhiều biến thể dựa trên cách chọn vật phẩm và đặc điểm của các vật phẩm. Dưới đây là một số biến thể dựa trên bài toán gốc:
+\begin{itemize}
+    \item [\textbf{a.}] \textbf{Bài toán Knapsack 0/1 (0/1 Knapsack Problem):} Đây là biến thể phổ biến nhất của bài toán Knapsack. Mỗi vật phẩm chỉ có thể được chọn hoặc không chọn, tức là $x_i \in \{0,1\}$. Không thể chọn một phần của vật phẩm. Đây là bài toán NP-đầy đủ.
+    \item [\textbf{b.}] \textbf{Bài toán Knapsack chia nhỏ (Fractional Knapsack Problem):} Trong bài toán này, ta có thể chọn một phần của vật phẩm, tức là $x_i \in [0,1]$.
+    \item[\textbf{c.}] \textbf{Bài toán Knapsack nhiều chiều (Multi-dimensional Knapsack Problem - MKP)} bài toán Knapsack nhiều chiều mở rộng bài toán Knapsack cơ bản sang trường hợp có nhiều ràng buộc về tài nguyên (ví dụ: thời gian, dung lượng, ngân sách), thay vì chỉ giới hạn một dung lượng như trong bài toán Knapsack thông thường.
+    \item [\textbf{d.}] \textbf{Bài toán Knapsack đa mục tiêu (Multi-objective Knapsack Problem):} Trong bài toán này, ta không chỉ tối ưu hóa một giá trị (như tổng giá trị của các vật phẩm) mà còn phải tối ưu hóa nhiều mục tiêu khác nhau, chẳng hạn như cả giá trị và chi phí bảo trì.
+\end{itemize}
+
+Tuy có rất nhiều biến thể nhưng do bị giới hạn về thời gian nghiên cứu, do đó trong khuôn khổ của tiểu luận này, chúng tôi chỉ chọn bài toán 0/1 Knapsack (bài toán gốc) để thực hiện nghiên cứu, phân tích và đánh giá, những biến thể khác sẽ là những bài toán sẽ được nghiên cứu trong tương lại.
+\section{Các khái niệm và định nghĩa cơ bản}
+\begin{itemize}
+    \item \textbf{Dung lượng túi ($c$): }Là giới hạn về tổng trọng lượng mà túi có thể chứa. Đây là ràng buộc chính trong bài toán Knapsack.
+    \item \textbf{Trọng lượng ($w_i$):} Trọng lượng của mỗi vật phẩm $i$. Nếu tổng trọng lượng của các vật phẩm được chọn vượt quá dung lượng $W$, giải pháp sẽ không hợp lệ.
+    \item \textbf{Giá trị ($p_i$):} Giá trị của mỗi vật phẩm $i$. Mục tiêu là tối đa hóa tổng giá trị của các vật phẩm được chọn.
+    \item \textbf{Biến nhị phân ($x_i$):} Trong bài toán Knapsack 0/1, biến này thể hiện việc chọn hay không chọn vật phẩm $i$.
+    \item \textbf{Bài toán P: }  là lớp bài toán quyết định có thể được giải quyết trong thời gian đa thức.
+    \item  \textbf{Bài toán NP:} NP là lớp bài toán quyết định mà
+    để xác nhận câu trả lời là “yes” của nó, có thể đưa ra bằng chứng ngắn gọn dễ kiểm tra.
+    \item \textbf{Bài toán NP-đầy đủ:} Bài toán được gọi là NP-đầy đủ nếu nó thỏa mãn cả hai điều kiện sau:
+    \begin{itemize}
+        \item Nó thuộc NP.
+        \item Nó là \index{NP-khó}: Một bài toán A được gọi là NP-khó
+        nếu như sự tồn tại thuật toán đa thức để giải nó kéo
+        theo sự tồn tại thuật toán đa thức để giải mọi bài
+        toán trong NP.
+    \end{itemize}
+\end{itemize}
+
+\section{Các ứng dụng của bài toán Knapsack}
+Bài toán Knapsack xuất hiện trong nhiều tình huống thực tế đòi hỏi tối ưu hóa tài nguyên, chi phí, hoặc các nguồn lực khác. Dưới đây là một số ứng dụng điển hình:
+
+\begin{itemize}
+    \item \textbf{Quản lý dự án:} Khi có nhiều nhiệm vụ với mức độ quan trọng và yêu cầu tài nguyên khác nhau, bài toán Knapsack giúp xác định các nhiệm vụ nào nên được thực hiện để tối đa hóa giá trị dự án trong khi không vượt quá tài nguyên sẵn có.
+    \item \textbf{Tối ưu hóa kho hàng và vận tải:} Trong lĩnh vực vận tải, bài toán Knapsack giúp lựa chọn hàng hóa để vận chuyển với giá trị cao nhất mà không vượt quá trọng tải của xe.
+    \item \textbf{Lập lịch công việc:} Trong lập lịch, bài toán Knapsack có thể được sử dụng để quyết định các công việc nào nên được thực hiện với mục tiêu tối đa hóa giá trị đầu ra trong thời gian giới hạn.
+    \item \textbf{Quản lý tài chính cá nhân:} Khi cần phân bổ nguồn lực (tiền, thời gian, tài nguyên) vào nhiều khoản đầu tư khác nhau, bài toán Knapsack giúp tối đa hóa lợi nhuận mà không vượt quá ngân sách.
+    \item \textbf{Bảo mật và mã hóa thông tin:} Bài toán Knapsack cũng được áp dụng trong các thuật toán bảo mật như \index{hệ mật mã Merkle-Hellman}, nơi các tập hợp trọng số và giá trị được sử dụng để mã hóa và giải mã thông tin.
+\end{itemize}

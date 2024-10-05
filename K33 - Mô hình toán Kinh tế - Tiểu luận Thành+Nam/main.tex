@@ -1,0 +1,73 @@
+\documentclass[fontsize=13.0pt, oneside, a4paper, openany, vietnamese]{thesis}
+\usepackage[utf8]{inputenc}
+% \usepackage{fontspec}
+
+
+\usepackage[backend=bibtex,bibstyle=thesis,sorting=nyvt,block=none,defernumbers=true,autolang=other]{biblatex}
+\addbibresource{refs.bib}
+
+% Package generate lorem text
+\usepackage{lipsum}
+
+\usepackage{makeidx}
+\makeindex
+
+\usepackage[totoc]{idxlayout}
+\usetikzlibrary{arrows.meta, positioning}
+
+\begin{document}
+    % Trang bìa
+    % Nếu là tiếng Việt
+    \input{Cover}
+
+    % Nếu là tiếng Anh
+    % \input{Cover_En}
+    \numRoman
+
+    % Lời cam đoan và lời cảm ơn
+    \input{acknowledgements}
+
+    % Mục lục
+    \contents
+
+    % Trang thông tin luận văn
+    % \input{ThesisInfo}
+    % \input{ThesisInfo_En}
+
+    % Danh mục các ký hiệu, chữ viết tắt
+    \input{symbol_list}
+
+    % Danh mục các bảng
+    \listTables
+
+    % Danh mục các hình vẽ, đồ thị
+    \listImages
+    \pageNumber
+
+    \input{chapter01}
+
+    % Chương 2
+    % \input{chapter02}
+    \input{chapter02-temp}
+    \input{chapter02}
+
+    % Chương 3
+    \input{chapter03}
+
+    % Chương 4
+    \input{chapter04}
+
+    % Chương 5
+    \input{chapter05}
+
+    % Danh mục công bố công trình
+    % \input{publish}
+
+    % Tài liệu tham khảo
+    \refs
+    \nocite{*}
+
+    \printindex
+    % Phụ lục
+    % \input{appendix}
+\end{document}

@@ -1,0 +1,458 @@
+\chapter{KẾT LUẬN}
+Thuật toán Knapsack là một trong những bài toán tối ưu hóa cổ điển trong khoa học máy tính và toán học. Thông qua quá trình tìm hiểu và thực hiện lại thuật toán, chúng ta có thể rút ra một số kết luận quan trọng sau:
+
+\begin{itemize}
+    \item \textbf{Sự phức tạp của bài toán}: Bài toán Knapsack tồn tại dưới nhiều biến thể khác nhau như bài toán Knapsack 0/1, bài toán Knapsack phân số (Fractional Knapsack), và bài toán Knapsack nhiều chiều (Multi-dimensional Knapsack). Mỗi biến thể đều có độ phức tạp riêng, trong đó bài toán Knapsack 0/1 là dạng phổ biến nhất nhưng có độ phức tạp cao, đặc biệt là khi số lượng vật phẩm lớn.
+
+    \item \textbf{Các phương pháp giải quyết}: Thuật toán tham lam (Greedy) là phương pháp đơn giản và hiệu quả nhất cho bài toán Knapsack phân số, nhưng không áp dụng được cho bài toán Knapsack 0/1. Với bài toán Knapsack 0/1, các thuật toán quy hoạch động và quay lui (backtracking) thường được sử dụng để tìm ra lời giải tối ưu. Tuy nhiên, những thuật toán này có độ phức tạp thời gian cao, do đó cần tối ưu hóa hiệu suất khi triển khai trên thực tế.
+
+    \item \textbf{Hiệu quả của các phương pháp}: Trong quá trình thực hiện lại thuật toán, chúng ta nhận thấy rằng thuật toán quy hoạch động có khả năng tìm ra kết quả chính xác với độ phức tạp thời gian $O(nc)$ (trong đó $n$ là số lượng vật phẩm và $c$ là dung lượng của túi), nhưng đòi hỏi bộ nhớ lớn. Thuật toán tham lam tuy nhanh và đơn giản nhưng chỉ phù hợp cho bài toán phân số, và không luôn cho ra kết quả tối ưu trong bài toán Knapsack 0/1.
+
+    \item \textbf{Ứng dụng thực tiễn}: Thuật toán Knapsack có nhiều ứng dụng thực tế trong các lĩnh vực như tối ưu hóa tài nguyên, lập kế hoạch sản xuất, quản lý tài chính, và các hệ thống phân phối hàng hóa. Hiểu rõ về cách hoạt động và hạn chế của từng thuật toán giúp đưa ra những giải pháp phù hợp cho các bài toán thực tiễn.
+
+    \item \textbf{Những cải tiến trong tương lai}: Việc nghiên cứu và áp dụng các thuật toán tiến hóa hoặc heuristic như thuật toán di truyền (genetic algorithm) hoặc thuật toán bầy đàn (swarm optimization) có thể là một hướng đi hứa hẹn để giải quyết bài toán Knapsack với các dữ liệu lớn, nơi mà các phương pháp truyền thống gặp phải hạn chế về thời gian và tài nguyên.
+\end{itemize}
+
+Tóm lại, việc tìm hiểu và thực hiện lại thuật toán Knapsack đã giúp chúng ta hiểu sâu hơn về bản chất của các bài toán tối ưu hóa, từ đó có thể ứng dụng vào nhiều lĩnh vực khác nhau. Tuy nhiên, để đạt được hiệu quả cao, việc lựa chọn phương pháp giải quyết phù hợp với từng tình huống cụ thể là vô cùng quan trọng.
+
+
+\appendix 
+
+\chapter*{PHỤ LỤC 1: MÃ NGUỒN PYTHON CHO THUẬT TOÁN KNAPSACK}
+\addcontentsline{toc}{chapter}{{\bf PHỤ LỤC 1: MÃ NGUỒN PYTHON CHO THUẬT TOÁN KNAPSACK}}
+
+\section{Mã nguồn:}\href{https://drive.google.com/drive/folders/1vWSQapUZHMn098ktCKMt2karA2bhzFtI?usp=sharing}{Knapsack algorithmn}
+
+\section{Các lớp bổ trợ}
+
+\begin{mintedbox}{python}
+class Item:
+    def __init__(self, weight, value, id):
+        """
+        Initialize the Item class.
+
+        Parameters
+        ----------
+        weight : int
+            The weight of the item.
+        value : int
+            The value of the item.
+        id : int
+            The id of the item.
+
+        Returns
+        -------
+        None
+        """
+        self.weight = weight
+        self.value = value
+        self.ratio = value / weight
+        self.id = id
+\end{mintedbox}
+
+
+\begin{mintedbox}{python}
+    class Knapsack:
+    def __init__(self, capacity, item_weights, item_values):
+        """
+        Initialize the Knapsack class.
+
+        Parameters
+        ----------
+        capacity : int
+            The maximum weight the knapsack can hold.
+        item_weights : list of int
+            The weights of each item.
+        item_values : list of int
+            The value of each item.
+
+        Attributes
+        ----------
+        capacity : int
+            The maximum weight the knapsack can hold.
+        item_weights : list of int
+            The weights of each item.
+        item_values : list of int
+            The value of each item.
+        num_items : int
+            The number of items.
+        """
+        self.capacity = capacity
+        self.items = [
+            Item(w, v, i) for i, (w, v) in enumerate(zip(item_weights, item_values))
+        ]
+        self.num_items = len(self.items)
+
+    def sort(self):
+        return sorted(self.items, key=lambda x: x.value, reverse=True)
+\end{mintedbox}
+
+\section{Cài đặt thuật toán tham lam}
+
+\begin{mintedbox}{python}
+    def greedy(self, items: list[Item]):
+        """
+        Find the maximum value that can be stored in the knapsack using the greedy algorithm.
+
+        Returns
+        -------
+        int
+            The maximum value that can be stored in the knapsack.
+        """
+        result = [0] * self.num_items
+        total_value = 0
+        total_weight = 0
+        items = self.sort(items)
+        for i, item in enumerate(items):
+            if item.weight + total_weight <= self.capacity:
+                result[i] = 1
+                total_weight += item.weight
+                total_value += item.value
+            else:
+                remain = self.capacity - total_weight
+                if remain == 0:
+                    continue
+                total_value = total_value + item.value * remain / item.weight
+                result[i] = 1
+                break
+
+        # return solution based on original ids
+        result, _ = zip(*sorted(zip(result, items), key=lambda x: x[1].id))
+        return result, total_value
+
+    def greedy_binary(self, items: list[Item]):
+        """
+        Find the maximum value that can be stored in the knapsack using the greedy algorithm.
+
+        Returns
+        -------
+        int
+            The maximum value that can be stored in the knapsack.
+        """
+        # Sort the items by value/weight ratio in descending order
+        remain_weight = self.capacity
+        result = [0] * self.num_items
+        total_value = 0
+        best_idx = 0
+        items = self.sort(items)
+        for i, item in enumerate(items):
+            value = item.value
+            weight = item.weight
+            if weight <= remain_weight:
+                result[i] = 1
+                remain_weight -= weight
+                total_value += value
+                best_idx = i
+            if items[best_idx].value > value:
+                best_idx = i
+
+        if items[best_idx].value > total_value:
+            total_value = items[best_idx].value
+            result = [1 if i == best_idx else 0 for i in range(self.num_items)]
+
+        # return solution based on original ids
+        result, _ = zip(*sorted(zip(result, items), key=lambda x: x[1].id))
+        return result, total_value
+\end{mintedbox}
+
+\section{Cài đặt thuật toán quy hoạch động}
+
+Thủ tục quy hoạch động thuần
+
+\begin{mintedbox}{python}
+    def dynamic_programming_vanilla(self, items: list[Item]):
+        """
+        Find the maximum value that can be stored in the knapsack using dynamic programming.
+
+        The time complexity is O(n*W) where n is the number of items and W is the capacity of the knapsack.
+
+        Returns
+        -------
+        result : list
+            A list of 0/1 indicating whether the item should be included or not.
+        total_value : int
+            The total value of the items.
+        total_weight : int
+            The total weight of the items.
+        """
+        dp_table = np.zeros((self.num_items + 1, self.capacity + 1))
+        capacity = self.capacity
+        for i in range(1, self.num_items + 1):
+            for w in range(1, capacity + 1):
+                if items[i - 1].weight > w:
+                    dp_table[i, w] = dp_table[i - 1, w]
+                else:
+                    dp_table[i, w] = max(
+                        dp_table[i - 1, w],
+                        dp_table[i - 1, w - items[i - 1].weight] + items[i - 1].value,
+                    )
+
+        # traceback chosen items
+        chosen_items = [0] * self.num_items
+        total_weight = 0
+        for i in range(self.num_items, 0, -1):
+            if dp_table[i, capacity] > dp_table[i - 1, capacity]:
+                chosen_items[i - 1] = 1
+                total_weight = total_weight + self.items[i - 1].weight
+                capacity = capacity - self.items[i - 1].weight
+
+        return chosen_items, int(max(dp_table[self.num_items]))
+\end{mintedbox}
+
+
+\subsection{Cài đặt thủ tục khử thống trị}
+
+\begin{mintedbox}{python}
+    def dynamic_programming_elimination_dominated(self, items: list[Item]):
+        def rec2(s, b, W1, P1, X1, w_m, p_m, c):
+            i = 0
+            k = 0
+            h = 1
+            y = w_m
+            W1[s + 1] = float("inf")  # W1[s+1] = infinity
+
+            # Khởi tạo W2, P2, X2
+            W2 = [0] * (len(W1) + 1)
+            P2 = [0] * (len(P1) + 1)
+            X2 = [0] * (len(X1) + 1)
+
+            while min(y, W1[h]) <= c:
+                if W1[h] <= y:
+                    # Định nghĩa trạng thái kế tiếp (p, x)
+                    p = P1[h]
+                    x = X1[h]
+
+                    if W1[h] == y:
+                        if P1[i] + p_m > p:
+                            p = P1[i] + p_m
+                            x = X1[i] + b
+                        i = i + 1
+                        y = W1[i] + w_m
+
+                    # Lưu giữ trạng thái kế tiếp nếu không bị thống trị
+                    if p > P2[k]:
+                        k = k + 1
+                        W2[k] = W1[h]
+                        P2[k] = p
+                        X2[k] = x
+                    h = h + 1
+                else:
+                    # Lưu giữ trạng thái mới nếu không bị thống trị
+                    if P1[i] + p_m > P2[k]:
+                        k = k + 1
+                        W2[k] = y
+                        P2[k] = P1[i] + p_m
+                        X2[k] = X1[i] + b
+                    i = i + 1
+                    y = W1[i] + w_m
+
+            s = k
+            b = 2 * b  # b := 2b
+
+            return s, b, W2, P2, X2
+
+        W1 = [0] * (self.num_items + 1)
+        P1 = [0] * (self.num_items + 1)
+        X1 = [0] * (self.num_items + 1)
+
+        s = 1
+        b = 2
+
+        # init value for the first state
+        W1[1] = items[0].weight
+        P1[1] = items[0].value
+        X1[1] = 1
+
+        for m in range(2, self.num_items):
+            s, b, W1, P1, X1 = rec2(
+                s, b, W1, P1, X1, items[m - 1].weight, items[m - 1].value, self.capacity
+            )
+
+        max_value = P1[s]  # z = P1_s
+        x = [0] * self.num_items
+
+        while b > 0 and X1[s] != 0:
+            for i in range(self.num_items - 1, -1, -1):
+                if X1[s] & (1 << i):
+                    x[i] = 1
+                    b -= 2
+
+        return x, max_value
+\end{mintedbox}
+
+\subsection{Cài đặt thuật toán Horowitz-Sahni}
+
+
+\begin{mintedbox}{python}
+    def dynamic_programming_Horowitz_Sahni(self, items: list[Item]):
+        def generatesubset(items):
+            n = len(items)
+            subsets = []
+            for i in range(n + 1):
+                for comb in combinations(items, i):
+                    weight = sum(item.weight for item in comb)
+                    profit = sum(item.value for item in comb)
+                    subset_items = [item for item in comb]
+                    # subsets.append((weight, profit))
+                    subsets.append((weight, profit, subset_items))
+            return subsets
+
+        def horowitz_sahni_knapsack(items):
+            q = math.ceil(self.num_items / 2)
+            items1 = items[:q]
+            items2 = items[q:]
+
+            subsets1 = generatesubset(items1)
+            subsets2 = generatesubset(items2)
+
+            # Sort subsets by weight
+            subsets2.sort(key=lambda x: x[0])
+
+            # Filter the subsets2 to keep only the ones with the highest profit for each weight
+            filtered_subsets2 = []
+            max_profit = -1
+            for weight, profit, subset_items in subsets2:
+                if profit > max_profit:
+                    # filtered_subsets2.append((weight, profit))
+                    filtered_subsets2.append((weight, profit, subset_items))
+                    max_profit = profit
+
+            # Initialize maximum profit
+            max_profit = 0
+            best_combination = []
+
+            # For each subset in subsets1, find the best complement in subsets2
+            for weight1, profit1, subset1_items in subsets1:
+                remaining_capacity = self.capacity - weight1
+                if remaining_capacity < 0:
+                    continue
+
+                # Binary search to find the best subset in subsets2 that fits within the remaining capacity
+                lo, hi = 0, len(filtered_subsets2) - 1
+                while lo <= hi:
+                    mid = (lo + hi) // 2
+                    if filtered_subsets2[mid][0] <= remaining_capacity:
+                        lo = mid + 1
+                    else:
+                        hi = mid - 1
+
+                # If we found a valid subset in subsets2, update the max profit
+                if hi >= 0:
+                    # max_profit = max(max_profit, profit1 + filtered_subsets2[hi][1])
+                    total_profit = profit1 + filtered_subsets2[hi][1]
+                    if total_profit > max_profit:
+                        max_profit = total_profit
+                        best_combination = (
+                            subset1_items + filtered_subsets2[hi][2]
+                        )  # Combine items from both subsets
+
+            # return subsets1, subsets2, max_profit
+            # return max_profit
+            return best_combination, max_profit
+
+        selected_items, max_profit = horowitz_sahni_knapsack(items)
+
+        solution = [1 if item in selected_items else 0 for item in items]
+        return solution, max_profit
+\end{mintedbox}
+
+
+\subsection{Cài đặt thuật toán Toth}
+
+\begin{mintedbox}{python}
+    def dynamic_programming_Toth(self, items: list[Item]):
+        """
+        Find the maximum value that can be stored in the knapsack using dynamic programming
+        with the Toth algorithm.
+
+        The time complexity is O(n*W) where n is the number of items and W is the capacity of the knapsack.
+
+        This algorithm is a variant of the dynamic programming algorithm for 0/1 knapsack problem.
+        It uses a binary search tree to store the maximum value that can be stored in the knapsack
+        with the given capacity.
+
+        Returns
+        -------
+        result : list
+            A list of 0/1 indicating whether the item should be included or not.
+        total_value : int
+            The total value of the items.
+        total_weight : int
+            The total weight of the items.
+        """
+
+        def rec(v, c, P, X, w_m, p_m, b):
+            """
+            Update the dynamic programming table P and X from the given v to v + w_m.
+
+            Parameters
+            ----------
+            v : int
+                The current value of the maximum value that can be stored in the knapsack.
+            c : int
+                The capacity of the knapsack.
+            P : list
+                The dynamic programming table to store the maximum value that can be stored in the knapsack.
+            X : list
+                The dynamic programming table to store the number of items that are included in the optimal solution.
+            w_m : int
+                The weight of the current item.
+            p_m : int
+                The value of the current item.
+            b : int
+                The power of 2 that is used to calculate the next value of v.
+
+            Returns
+            -------
+            v : int
+                The updated value of the maximum value that can be stored in the knapsack.
+            b : int
+                The updated value of b.
+            P : list
+                The updated dynamic programming table P.
+            X : list
+                The updated dynamic programming table X.
+            """
+            if v < c:
+                u = v
+                v = min(v + w_m, c)
+                for hat_c in range(u + 1, v + 1):
+                    P[hat_c] = P[u]
+                    X[hat_c] = X[u]
+
+            for hat_c in range(v, w_m - 1, -1):
+                if P[hat_c] < P[hat_c - w_m] + p_m:
+                    P[hat_c] = P[hat_c - w_m] + p_m
+                    X[hat_c] = X[hat_c - w_m] + b
+
+            b *= 2
+            return v, b, P, X
+
+        P = [0] * (self.capacity + 1)
+        X = [0] * (self.capacity + 1)
+
+        for hat_c in range(0, items[0].weight):
+            P[hat_c] = 0
+            X[hat_c] = 0
+
+        v = items[0].weight
+        b = 2
+        P[v] = items[0].value
+        X[v] = 1
+
+        for i in range(1, self.num_items):
+            v, b, P, X = rec(v, self.capacity, P, X, items[i].weight, items[i].value, b)
+
+        z = P[self.capacity]
+        x = [0] * self.num_items
+        remain_weight = self.capacity
+
+        while remain_weight > 0 and X[remain_weight] != 0:
+            for i in range(self.num_items - 1, -1, -1):
+                if X[remain_weight] & (1 << i):
+                    x[i] = 1
+                    remain_weight = remain_weight - items[i].weight
+        if remain_weight > 0:
+            return [1] * self.num_items, max(P), self.capacity
+        return x, z
+\end{mintedbox}

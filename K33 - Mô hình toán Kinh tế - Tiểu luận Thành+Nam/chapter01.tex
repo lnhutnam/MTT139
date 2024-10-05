@@ -1,0 +1,99 @@
+\chapter{MỞ ĐẦU}
+
+% Mục tiêu: Giới thiệu tổng quan, lịch sử hình thành 
+
+\section{Giới thiệu}
+Thuật ngữ ``knapsack'' có nguồn gốc từ thế kỷ 17, bắt nguồn từ từ tiếng Đức ``knapzak'', có nghĩa là ``túi đựng thức ăn''. Vào thời điểm đó, những người lính thường mang khẩu phần ăn trong một chiếc túi đeo trên lưng và phải đối mặt với tình huống khó xử khi lựa chọn những vật dụng thiết yếu nhất mà không vượt quá sức chứa của túi. Đây là lý do dẫn đến sự hình thành của bài toán này hay còn gọi là bài toán ba-lô.
+
+Bài toán ba-lô được công nhận và nghiên cứu trong lĩnh vực Khoa học Máy tính vào giữa thế kỷ 20, khi các nhà nghiên cứu bắt đầu tập trung hơn trong việc nghiên cứu các bài toán tối ưu hóa và thuật toán để giải quyết chúng. Việc xây dựng và nghiên cứu bài toán này đã trở nên phổ biến như một phần của lĩnh vực tối ưu tổ hợp.
+
+Vào cuối những năm 50, George Dantzig đã công khai công trình tiên phong trong việc nghiên cứu bài toán ba-lô. Sau đó, bài toán này được nghiên cứu chuyên sâu hơn và đã có nhiều khám phá trong việc ứng dụng nó trong công nghiệp và quản lý tài chính. Nhìn về mặt bản chất lý thuyết, dạng bài toán ba-lô thường xuất hiện khi sử dụng phép nớ lỏng cho nhiều biến thể của bài toán quy hoạch nguyên. 
+
+Bài toán knapsack đã được nghiên cứu chuyên sâu và rộng rãi bởi các nhà lý thuyết lẫn ứng dụng trong những thập kỷ vừa qua. Các nhà nghiên cứu lý thuyết quan tấm đến chúng chủ yếu bởi cấu trúc đơn giản của bài toán mà cho phép khám phá một số tính chất thú vị của tổ hợp và các ứng dụng của nó trong việc giải quyết các bài toán tối ưu phức tạp thông qua việc mô hình thành một chuỗi các loại bài toán knapsack liên hoàn. Bên cạnh đó, dưới góc nhìn thực hành, các bài toán này có thể mô hình nhiều vấn đề trong công nghiệp: ngân sách vốn, xếp hàng, và cắt hàng tồn kho.
+
+Mặc dù thoạt nhìn bài toán Knapsack có vẻ đơn giản, nhưng nó đã được chứng minh là thuộc nhóm các bài toán NP-đầy đủ, tức là không có thuật toán đa thức nào có thể giải quyết bài toán này một cách tối ưu trong mọi trường hợp. Điều này khiến bài toán Knapsack trở nên quan trọng và thú vị đối với cả những người nghiên cứu lý thuyết và những nhà thực hành tìm kiếm giải pháp tối ưu trong các tình huống thực tế.
+
+Trong tiểu luận này, chúng ta sẽ đi sâu tìm hiểu về bản chất của bài toán Knapsack, các phương pháp giải quyết phổ biến, và những ứng dụng thực tiễn của nó. Đồng thời, chúng ta cũng sẽ xem xét các bài toán mở rộng và phức tạp hơn xuất phát từ bài toán Knapsack gốc.
+
+\section{Lý do chọn đề tài}
+Lý do lựa chọn bài toán Knapsack làm đề tài cho tiểu luận xuất phát từ sự quan trọng và tính ứng dụng rộng rãi của nó. Bài toán không chỉ giúp hiểu rõ hơn về các vấn đề tối ưu hóa, mà còn có những ứng dụng trong nhiều lĩnh vực đời sống. Trong công nghệ thông tin, bài toán Knapsack có thể được áp dụng trong quản lý tài nguyên máy tính, tối ưu hóa việc lưu trữ dữ liệu và bảo mật thông tin. Trong kinh tế và quản lý, bài toán này hỗ trợ việc ra quyết định liên quan đến phân bổ nguồn lực sao cho hiệu quả.
+
+Ngoài ra, với sự phát triển của các thuật toán máy tính, việc tìm kiếm các giải pháp gần đúng hoặc giải pháp tối ưu hóa hiệu quả cho bài toán Knapsack ngày càng trở nên quan trọng. Nghiên cứu và hiểu rõ hơn về các phương pháp này sẽ mang lại nhiều giá trị trong việc phát triển các ứng dụng thực tiễn.
+
+\section{Mục tiêu của đề tài}
+Tiểu luận này hướng đến việc trả lời những câu hỏi chính sau:
+\begin{itemize}
+    \item Bản chất của bài toán Knapsack là gì? Tại sao nó lại được coi là một bài toán \index{NP-đầy đủ}?
+    \item Các phương pháp giải bài toán Knapsack phổ biến là gì, và mỗi phương pháp có những ưu điểm và nhược điểm nào?
+    \item Bài toán Knapsack có những biến thể nào và các biến thể này được áp dụng ra sao trong thực tế?
+    \item Có những ứng dụng thực tiễn nào của bài toán Knapsack trong các lĩnh vực của đời sống?
+\end{itemize}
+Mục tiêu của tiểu luận là cung cấp một cái nhìn tổng quan và chi tiết về bài toán Knapsack, từ lý thuyết đến ứng dụng, cũng như các phương pháp giải quyết hiệu quả cho các bài toán thực tế.
+
+\section{Phương pháp nghiên cứu}
+Tiểu luận sẽ sử dụng các phương pháp nghiên cứu sau để phân tích bài toán Knapsack:
+\begin{itemize}
+    \item \textbf{Nghiên cứu lý thuyết:} Thu thập và phân tích các tài liệu, sách, bài báo khoa học liên quan đến bài toán Knapsack, các thuật toán giải và các ứng dụng thực tiễn.
+    \item \textbf{Phân tích thuật toán:} Trình bày và đánh giá các thuật toán phổ biến như quét cạn (duyệt toàn bộ), \index{quy hoạch động} (dynamic programming), và \index{phương pháp tham lam} (greedy algorithm) trong việc giải bài toán Knapsack.
+    \item \textbf{Ví dụ minh họa:} Sử dụng các ví dụ cụ thể để giải bài toán Knapsack bằng các phương pháp khác nhau, từ đó so sánh và đánh giá hiệu quả của từng phương pháp.
+    \item \textbf{Thực nghiệm:} Hiện thực hoá thuật toán bằng ngôn ngữ lập trình.
+\end{itemize}
+
+% \section{Phát biểu bài toán}
+% Giả sử rằng một người quá giang lấp đầy chiếc ba-lô của anh ta bằng cách lựa chọn trong các vật phẩm có sẵn mà cho anh ta sự thoải mái nhất. Bài toán ba-lô này có thể mô hình bằng cách đánh giá số các vật phẩm từ $1$ đến $n$ và đưa vào một vector của các biến nhị phân $x_j\quad (j = 1,\dots, n$:
+
+% \begin{equation}
+%     x_j = \begin{cases}
+%         1\quad\text{nếu vật phẩm }j\text{ được chọn;}\\
+%         0\quad\text{ngược lại.}
+%     \end{cases}
+% \end{equation}
+
+% Và, nếu $p_j$ là một độ đo của sự thoải mái được cho bởi vật phẩm $j$, $w_j$ là kích thước của nó và $c$ là kích thước của chiếc ba-lô, bài toán của chúng ta sẽ là cần chọn từ các vector nhị phân $x$ sao cho thỏa mãn \emph{ràng buộc sau}:
+% \begin{equation}
+%     \sum_{j = 1}^nw_jx_j \leq c,
+% \end{equation}
+% Ta cần \emph{cực đại} hàm mục tiêu như sau:
+% \begin{equation}
+%     \sum_{j = 1}^np_jx_j.
+% \end{equation}
+% Và thật là hiển nhiên rằng nghiệm tối ưu của bài toán này sẽ đưa ra lời giải khả thi tốt nhất cho việc lựa chọn vật phẩm.
+
+% Đến đây, ta hoàn toàn có thể giả lập để thử giải quyết bài toán này. Một tiếp cận ngây thơ là lập trình cho máy tính để mà đánh giá tất cả các vector nhị phân $x$ có thể có và lựa chọn ra cách chọn tốt nhất mà thỏa mãn ràng buộc của bài toán. Một thách thức được đặt ra là số lượng vector nhị phân khả thi là $2^n$ vector. Thế nên, cho dù là một máy tính lý tưởng, có thể đánh giá một triệu vector mỗi giây, thì nó cũng phải tốn hơn 30 năm với $n = 60$, hơn 60 năm với $n = 61$, mười thế kỉ với $n = 65$. Nhưng với các thuật toán được phát triển gần đây, trong hầu hết các trường hợp, chúng có thể giải bài toán và đưa ra nghiệm tối ưu với $n = 100,000$ chỉ trong vài giây.
+
+% Bài toán vừa phát biểu trên là một đại diện cho nhiều loại bài toán ba-lô khác nhau mà trong đó một tập hợp các thực thể được cho trước, mỗi chúng được liên kết với một giá trị và kích cỡ, và ta cần chọn một hoặc nhiều tập con rời nhau sao cho tổng của các kích thước trong mỗi tập con không vượt quá một chặn cho trước và tổng các giá trị chọn được phải là lớn nhất.
+
+
+% \section{Một số thuật ngữ liên quan}
+
+% \section{Độ phức tạp tính toán}
+
+
+
+% \section{Chặn trên và chặn dưới}
+
+
+\section{Phân công công việc}
+
+\begin{table}[H]
+\centering
+\caption{Bảng phân công đồ án}
+\label{tab:phancong0}
+\begin{tabular}{lp{4cm}ll}
+\hline
+\multicolumn{1}{l}{STT} & \multicolumn{1}{p{4cm}}{Công việc}                          & \multicolumn{1}{l}{Người thực hiện} & \multicolumn{1}{l}{Kết quả}    \\ \hline
+\multicolumn{1}{l}{1}   & \multicolumn{1}{p{4cm}}{Khởi tạo báo cáo}          & \multicolumn{1}{l}{Nam}             & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{2}   & \multicolumn{1}{p{4cm}}{Soạn cơ sở lý thuyết}   & \multicolumn{1}{l}{Thành}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{3}   & \multicolumn{1}{p{4cm}}{Mô hình bài toán}     & \multicolumn{1}{l}{Thành}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{4}   & \multicolumn{1}{p{4cm}}{Mối liên hệ giữa dạng cực tiểu và dạng cực đại của bài toán} & \multicolumn{1}{l}{Nam}             & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{4}   & \multicolumn{1}{p{3cm}}{Nới lỏng Larange} & \multicolumn{1}{l}{Nam}             & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{5}   & \multicolumn{1}{p{4cm}}{Cải thiện các chặn cho bài toán}                   & \multicolumn{1}{l}{Thành}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline           
+\multicolumn{1}{l}{5}   & \multicolumn{1}{l}{Thuật toán tham lam}                   & \multicolumn{1}{l}{Nam}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{5}   & \multicolumn{1}{p{4cm}}{Thuật toán quy hoạch động - khử các trạng thái bị thống trị}                   & \multicolumn{1}{l}{Thành}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{5}   & \multicolumn{1}{p{4cm}}{Thuật toán quy hoạch động - Thuật toán Horowitz-Sahni}                   & \multicolumn{1}{l}{Nam}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{5}   & \multicolumn{1}{p{4cm}}{Thuật toán quy hoạch động - Thuật toán Toth}                   & \multicolumn{1}{l}{Thành}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{5}   & \multicolumn{1}{p{4cm}}{Cài đặt các thuật toán bằng python}                   & \multicolumn{1}{l}{Thành}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\multicolumn{1}{l}{5}   & \multicolumn{1}{p{4cm}}{Kiểm thử và đánh giá thuật toán}                   & \multicolumn{1}{l}{Nam}           & \multicolumn{1}{l}{Hoàn thành} \\ \hline
+\end{tabular}
+\end{table}\textbf{}
+

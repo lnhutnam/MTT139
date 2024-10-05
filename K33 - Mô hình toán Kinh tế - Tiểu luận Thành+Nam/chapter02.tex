@@ -1,0 +1,542 @@
+\chapter{MÔ HÌNH BÀI TOÁN 0-1 KNAPSACK}
+
+
+\section{Mô hình bài toán}
+
+Bài toán 0-1 Knapsack hay Knapsack nhị phân hay ba-lô nhị phân (KP): cho trước một tập $n$ \emph{mặt hàng} và một chiếc \emph{ba-lô} với:
+\begin{align}
+    p_j &= \text{lợi nhuận (profit) của mặt hàng } j,\\
+    w_j &= \text{trọng số (weight) của mặt hàng }j,\\
+    W &= \text{sức chứa (capcity) của ba-lô},
+\end{align}
+cần lựa chọn một tập con của các mặt hàng sao cho
+\begin{align}
+    % \label{eq:2.1}
+    \label{eq:2.1}
+    \text{maximize}\quad z &= \sum_{j =  1}^np_jx_j \\
+    \label{eq:2.2}
+    \text{subject to}\quad &\sum_{j=1}^nw_jx_j \leq c,\\
+    \label{eq:2.3}
+    & x_j = 0 \quad \text{hoặc} \quad 1,\quad j \in N = \{1, \dots, n\}
+\end{align}
+trong đó:
+\begin{equation}
+    x_j = \begin{cases}
+        1\quad\text{nếu vật phẩm }j\text{ được chọn;}\\
+        0\quad\text{ngược lại.}
+    \end{cases}
+\end{equation}
+
+Knapsack là bài toán NP-đầy đủ. Để chứng minh điều này, chúng ta sẽ đi chứng minh thông qua hai bước: Chứng minh Knapsack thuộc lớp NP và là NP-khó.
+\begin{itemize}
+    \item \textbf{Knapsack thuộc NP:} Giả sử chúng ta đã có một tập con các vật phẩm $S$ được chọn. Chúng ta cần kiểm tra hai điều kiện:
+    \begin{itemize}
+        \item [1.] Tổng trọng lượng của các vật phẩm trong 
+    "$S$ không vượt quá giới hạn $W$ Tính tổng trọng lượng của các vật phẩm $\sum_{i \in S}w_i$ và kiểm tra xem tổng này có nhỏ hơn hoặc bằng $W$ không.
+        \item [2.] Tính tổng giá trị của tập con: Tính tổng giá trị
+        $\sum_{i \in S}w_i$ và xác nhận đây là tổng giá trị được cung cấp.
+    \end{itemize}
+    Cả hai bước trên đều có thể thực hiện trong thời gian tuyến tính theo số lượng vật phẩm $n$ (bằng cách cộng dồn các trọng lượng và giá trị), do đó quá trình xác minh có thể thực hiện trong thời gian đa thức. Vì vậy, Knapsack thuộc lớp NP.
+    \item \textbf{Knapsack là NP-khó:} Để chứng minh Knapsack là NP-khó, chúng ta phải chứng minh rằng mọi bài toán trong NP có thể được quy giảm về bài toán Knapsack trong thời gian đa thức, hoặc ít nhất là một bài toán NP-đầy đủ có thể quy về Knapsack. Một cách để chứng minh điều này là thực hiện quy giảm từ bài toán Subset Sum – một bài toán đã được chứng minh là NP-đầy đủ – về bài toán Knapsack.
+
+    Bài toán Subset Sum được phát biểu  như sau: \begin{itemize}
+        \item Đầu vào: Một tập hợp các số nguyên dương $S={a_1, a_2,\dots,a_n}$ và một số nguyên dương $T$.
+        \item Đầu ra: Tìm một tập con của $S$ sao cho tổng của các phần tử trong tập con bằng chính xác $T$.
+    \end{itemize}
+    Bài toán Subset Sum là một trường hợp đặc biệt của bài toán Knapsack khi tất cả các giá trị $p_i$ của các vật phẩm bằng chính trọng lượng $w_i$. Do đó, bài toán Subset Sum có thể được chuyển đổi thành bài toán Knapsack bằng cách đặt giá trị của mỗi vật phẩm bằng trọng lượng của nó và đặt giới hạn trọng lượng $W$ bằng $T$. Nói cách khác:
+    \begin{itemize}
+        \item Đặt giá trị $w_i = w_i$ cho mỗi vật phẩm.
+        \item Đặt $c=T$.
+    \end{itemize}
+    Bây giờ, mục tiêu của bài toán Knapsack là tìm tập con các vật phẩm có tổng trọng lượng không vượt quá $T$, với tổng giá trị cũng tối đa. Trong trường hợp này, vì giá trị bằng trọng lượng, bài toán trở thành tìm tập con các trọng lượng mà tổng của chúng bằng đúng $T$, chính là bài toán Subset Sum. Vì Subset Sum đã được chứng minh là NP-đầy đủ, và Subset Sum có thể được quy giảm về Knapsack trong thời gian đa thức, điều này chứng tỏ rằng Knapsack là NP-khó.
+\end{itemize}
+% \section{Lịch sử giải quyết bài toán}
+
+% KP là một bài toán ba-lô quan trọng và là một trong những bài toán quy hoạch rời rạc được nghiên cứu chuyên sâu. Những nguyên nhân chính cho điều này có thể được tóm gọn như sau:
+% \begin{enumerate}[label=(\alph*)]
+%     \item Bài toán này có thể được xem xét dưới góc nhìn là một bài toán quy hoạch tuyến tính nguyên (Integer Linear Programming);
+%     \item Các bài toán phức tạp có thể được tách thành các bài toán nhỏ hơn thuộc dạng bài toán ba-lô;
+%     \item Các dạng bài toán ba-lô rất hữu ích trong việc mô hình các tình huống thực tế.
+% \end{enumerate}
+
+% Gần đây, bài toán này được sử dụng cho việc phát sinh các ràng buộc cảm sinh tối tiểu (Crowder, Johnson và Padberg, 1983) và trong các thủ tục giảm hệ số cho các chặn LP tăng cương của bài toán quy hoạch nguyên tổng quát (Dietrich và Escudero, 1989). Trong một vài thập kỷ gần đây, KP được nghiên cứu thông qua nhiều tiếp cận khác nhau dựa trên các phát triển lý thuyết của Tối ưu Tổ hợp.
+
+% Trong những năm 50, lý thuyết quy hoạch động (dynamic programming) của Bellman tạo ra các thuật toán đầu tiên để giải quyết chính xác bài toán knapsack nhị phân. Vào năm 1957, Dantzig đưa ra một phương pháp tao nhã và hiệu quả để xác định nghiệm cho việc nới lỏng liên tục của bài toán này, và do đó một \emph{chặn trên (upper bound)} $z$ được sử dụng để nghiên cứu bài toán này trong suốt hai mươi năm sau đó.
+
+% Trong những năm 60, phương pháp tiếp cận quy hoạch động để giải quyết bài toán KP và các loại bài toán knapsack khác được khám phá sâu sắc hơn bởi Gilmore và Gomory. Vào năm 1967, Kolesar thực nghiệm thành công với một \emph{thuật toán nhánh cận (branch-and-bound)} đầu tiên để giải quyết bài toán này.
+
+% Trong những năm 70, phương pháp nhánh cận tiếp tục được phát triển và được chứng minh là một phương pháp duy nhất có khả năng giải quyết các bài toán với số lượng biến lớn. Thuật toán nổi tiến trong thời điểm này được phát minh bởi Horowitz và Sahni. Vào năm 1973, Ingargiola và Korsh trình bày một \emph{thủ tục giảm (reduction procedure)}, một thuật toán tiền xử lý để giảm số lượng biến. Vào năm 1974, Johnson đưa ra một \textit{lược đồ xấp xỉ thời gian đa thức (polynominal-time approximation scheme)} cho bài toán tổng con (subset-sum); kết quả sau đó được Sahni mở rộng để giải quyết bài toán knapsack nhị phân. Lược đồ xấp xỉ thời gian đa thức đầy đủ được hoàn thiện lần đầu tiên bởi Ibarra và Kim vào năm 1975. Trong năm 1977, Martello và Toth trình bày một chặn trên áp đảo cho giá trị của nới lỏng liên tục.
+
+% Các kết quả chính của những năm 80 liên quan đến nghiệm của các bài toán với kích thước lớn. Vào năm 1980, Balas và Zemel trình bày một phương pháp tiếp cận mới để giải quyết bài toán bằng cách sắp xếp, trong hầu hết các trường hợp, chỉ một tập con nhỏ của các biến được sử dụng (core problem).
+
+\section{Mối liên hệ giữa dạng cực tiểu và dạng cực đại của bài toán}
+
+Không mất tính tổng quát, ta giả sử rằng:
+\begin{align}
+    \label{eq:2.4}
+    &p_j, w_j \text{ và } c \text{ là các số nguyên dương},\\
+    \label{eq:2.5}
+    &\sum_{j = 1}^nw_j > c,\\
+    \label{eq:2.6}
+    &w_j \leq c \text{ với } j \in N.
+\end{align}
+Nếu giả sử trong Biểu thức \eqref{eq:2.4} bị vi phạm, các phân số có thể được xử lý bằng cách nhân với một hệ số thích hợp, trong khi các giá trị không dương có thể được xử lý như sau (Glover, 1965):
+\begin{enumerate}
+    \item Với mỗi $j \in N^0 = \{j \in N: p_j \leq 0, w_j \geq 0\}$, gán $x_j := 0$;
+    \item Với mỗi $j \in N^1 = \{j \in N: p_j \geq 0, w_j \leq 0\}$, gán $x_j := 1$;
+    \item Đặt $N^{-} = \{j \in N: p_j < 0, w_j < 0\}$, $N^{+} = N \setminus (N^0 \cup N^1 \cup N^{-})$ và 
+    \begin{equation}
+        \begin{cases}
+            y_j = 1 - x_j, \bar{p}_j = - p_j, \bar{w}_j = -w_j \quad\text{với}\quad j \in N^{-},\\
+            y_i = x_j, \bar{p}_j = p_j, \bar{w}_j = w_j \quad\text{với}\quad j \in N^{+};
+        \end{cases}
+    \end{equation}
+    \item Giải bài toán
+    \begin{align}
+        \text{maximize}\quad z &= \sum_{j \in N^{-} \cup N^{+}}^n\bar{p}_jy_j + \sum_{j \in N^{1} \cup N^{-}}^n{p}_j \\
+        \text{subject to}\quad &\sum_{j \in N^{-} \cup N^{+}}^n\bar{w}_jx_j \leq c - \sum_{j \in N^{1} \cup N^{-}}^nw_j,\\
+        & y_j = 0 \quad \text{hoặc} 1,\quad j \in N^{-} \cup N^{+}.
+    \end{align}
+\end{enumerate}
+
+Nếu dữ liệu đầu vào vi phạm giả sử \eqref{eq:2.5}, thì hiển nhiên, $x_j = 1$ với mọi $j \in N$; nếu chúng vi phạm giả sử \eqref{eq:2.6}, thì $x_j = 0$ với mỗi $j$ mà thỏa $w_j > c$.
+
+Trừ khi có quy định khác, ta luôn giả định rằng các mặt hàng được sắp thứ tự theo chiều tăng dần giá trị của lợi nhuận trên mỗi đơn vị trong số, tức là:
+\begin{equation}
+    \label{eq:2.7}
+    \frac{p_1}{w_1} \geq \frac{p_2}{w_2} \geq \dots \geq \frac{p_n}{w_n}.
+\end{equation}
+Nếu không phải trường hợp này, lợi nhuận và trọng số có thể được tái chỉ số trong thời gian $O(n\log n)$ thông qua bất kỳ thủ tục sắp xếp nào.
+
+Cho trước bất kỳ thể hiện bài toán $I$ nào, ta đặt giá trị của nghiệm tối ưu là $z(I)$ hoặc nếu không có nhập nhằng gì xảy ra, ta có thể đặt đơn giản là $z$.
+
+Bài toán KP luôn được xem xét trong dạng cực đại. Phiên bản cực tiểu của bài toán này,
+\begin{align}
+    \text{minimize}\quad&\sum_{j = 1}^np_jy_j \\
+    \text{subject to}\quad & \sum_{j = 1}^nw_jy_j \geq q,\\
+    & y_j = 0 \quad \text{hoặc} \quad 1,\quad j \in N
+\end{align}
+có thể dễ dàng biến đổi thành dạng cực đại tương đương bằng cách đặt $y_j =  1 - x_j$ và giải \eqref{eq:2.1}, \eqref{eq:2.2}, \eqref{eq:2.3} với $c = \sum_{j = 1}^nw_j - q$. Đặt $z\max$ là giá trị nghiệm của bài toán, thì bài toán cực tiểu có giá trị nghiệm $z\min = \sum_{j = 1}^np_j - z\max$.
+
+Trong thực tế, việc áp dụng các thuật toán để tìm nghiệm tối ưu cho bài toán Knapsack 0/1 thường rất khó khăn, hoặc nếu có thể giải được thì độ phức tạp của thuật toán rất lớn. Vì vậy, bài toán Knapsack 0/1 thường được quy về bài toán tìm nghiệm tối ưu cho bài toán Fractional Knapsack, một biến thể cho phép chia nhỏ các vật phẩm. Thay vì phải chọn toàn bộ hoặc không chọn một vật phẩm (như trong Knapsack 0/1), ta có thể chọn một phần của vật phẩm.
+
+Việc áp dụng bài toán \index{Fractional Knapsack} mang lại nhiều lợi ích trong tối ưu hóa, đặc biệt trong những trường hợp mà việc chia nhỏ vật phẩm là hợp lý. Những lợi ích chính bao gồm:
+\begin{itemize}
+    \item Giải pháp tối ưu có thể đạt được thông qua thuật toán tham lam.
+    \item Độ phức tạp tính toán thấp hơn so với bài toán Knapsack 0/1.
+    \item Tính linh hoạt cao hơn trong việc tối ưu hóa, vì có thể chọn từng phần của vật phẩm thay vì toàn bộ.
+    \item Giải pháp xấp xỉ tốt cho bài toán Knapsack 0/1, vì bài toán Fractional Knapsack cung cấp một giá trị gần với nghiệm tối ưu của Knapsack 0/1. Nghiệm này có thể làm cơ sở cho các phương pháp tìm kiếm nhánh cận hoặc quy hoạch động.
+    \item Fractional Knapsack có nhiều ứng dụng thực tế, chẳng hạn như trong vận chuyển hàng hóa, phân bổ tài nguyên, và đầu tư tài chính, khi việc chia nhỏ các nguồn lực là hợp lý.
+\end{itemize}
+
+Chính vì nghiệm của phương pháp này xấp xỉ với nghiệm của bài toán 0/1 Knapsack, do đó, trong chương này chúng ta sẽ tập trung vào việc phân tích các phương pháp tìm chặn trên cho bài toán Fractional Knapsack. Sau khi có kết quả của chặn trên, ta sẽ dùng nó như là điều kiện để loại bớt các tổ hợp không phù hợp và áp dụng thuật giải nhánh cận hoặc quy hoạch động để tìm lời giải tối ưu cho bài toán  Knapsack 0/1. 
+\section{Phương pháp nới lỏng và chặn trên bài toán}
+\subsection{Quy hoạch tuyến tính nới lỏng và chặn Dantzig}
+
+Một trong những nới lỏng tự nhiên đầu tiên nhất của KP là \index{nới lỏng quy hoạch tuyến tính} (linear programming relaxation), tức là bài toán knapsack liên tục $C(KP)$ có được từ Biểu thức \eqref{eq:2.1}, \eqref{eq:2.2}, \eqref{eq:2.3} bằng cách loại bỏ các ràng buộc toàn vẹn trên $x_j$:
+
+\begin{align}
+    \text{maximize}\quad&\sum_{j = 1}^np_jx_j \\
+     \text{subject to}\quad & \sum_{j = 1}^nw_jx_j \leq c,\\
+     & 0 \leq x_j \leq 1, \quad j = 1, \dots, n.
+\end{align}
+
+Giả sử rằng các mặt hàng được sắp thứ tự theo như Biểu thức \eqref{eq:2.7}, được thêm vào ba-lô liên tiếp nhau cho đến khi mặt hàng đầu tiên $s$ được tìm thấy mà không khớp. Ta gọi nó là \textit{mặt hàng chủ chốt} hay \textit{phần tử chủ chốt (critical item)}, tức là:
+\begin{equation}
+    \label{eq:2.8}
+    s = \min\left\{j : \sum_{i = 1}^jw_i > c\right\},
+\end{equation}
+và để ý rằng, bởi vì giả định \eqref{eq:2.4}, \eqref{eq:2.5}, \eqref{eq:2.6}, ta có $1 < s \leq n$. Thì bài toán $C(KP)$ có thể được giải thông qua một tính chất được thiết lập bởi Dantzig (1957) mà được phát biểu như sau đây.
+
+\begin{theorem}
+    \label{theorem:optimal_solution_ckp}
+    Nghiệm tối ưu $\bar{x}$ của $C(KP)$ là 
+    \begin{align}
+        \bar{x}_j &= 1 \quad \text{với}\quad j = 1, \dots, s - 1,\\
+        \bar{x}_j &= 0 \quad \text{với}\quad j = s + 1, \dots, n,\\
+        \bar{x}_s &= \frac{\bar{c}}{w_s},
+    \end{align}
+    trong đó:
+    \begin{equation}
+        \label{eq:2.9}
+        \bar{c} = c - \sum_{j = 1}^{s - 1}w_j.
+    \end{equation}
+\end{theorem}
+\begin{proof}
+    Để ý rằng bất kỳ nghiệm tối ưu $x$ nào của $C(KP)$ phải cực đại, có nghĩa là
+    \begin{equation*}
+        \sum_{j = 1}^n w_jx_j = c
+    \end{equation*}
+    Không mất tính tổng quát, giả định rằng $p_j/w_j > p_{j+1} / w_{j+1}$ với tất cả $j$. Đặt $x^*$ là nghiệm tối ưu của $C(KP)$. Giả sử rằng, $x_k^* < 1$ với một số $k < s$ nào đó, thì ta phải có $q^*_q > \bar{x}_q$ tại ít nhất một item $q \geq s$. Cho trước một $\epsilon > 0$ đủ lớn, ta có thể tăng giá trị $x^*_k$ bởi lượng $\epsilon$ này và giảm $x^*_q$ bởi $\epsilon w_k / w_q$, thì giá trị của hàm mục tiêu của $\epsilon(p_k - p_q w_k/w_q)$ phải dương bởi vì $p_k/w_k > p_q / w_q$. Điều này là mâu thuẫn với giả thiết. 
+
+    Lập luận tương tự, ta có thể chứng minh $x^*_k >0 $ với một số $k > s$ là hoàn toàn không thể. Do đó, $\bar{x}_s = \bar{c}/w_s$ phải là cực đại.
+
+    Chứng minh hoàn tất.
+\end{proof}
+
+Giá trị nghiệm tối ưu của $C(KP)$ như sau:
+\begin{equation}
+    z(C(KP)) = \sum_{j=1}^{s - 1}p_j + \bar{c}\frac{p_s}{w_s}
+\end{equation}
+Bởi vì tính toàn vẹn của $p_j$ và $x_j$, do đó một chặn trên hợp lý $z(KP)$ là:
+\begin{equation}
+    \label{eq:2.10}
+    U_1 = \left \lfloor z(C(KP))\right \rfloor = \sum_{j = 1}^{s - 1}p_j + \left \lfloor \bar{c}\frac{p_s}{w_s}\right \rfloor,
+\end{equation}
+trong đó $\left \lfloor a\right \rfloor$ đại diện cho số nguyên lớn nhất không vượt quá $a$.
+
+Tỷ lệ hiệu suất trong trường hợp xấu nhất của $U_1$ là $\rho(U_1) = 2$. Ta có thể dễ dàng chứng minh được thông qua việc đánh giá Biểu thức \eqref{eq:2.10}, $U_1 < \sum_{j = 1}^{s-1}p_j + p_s$. Cả $\sum_{j = 1}^{s-1}p_j$ và $p_s$ là các giá trị khả thi cho KP, do đó không thể lớn hơn giá trị tối ưu $z$, do đó mà với bất kỳ thể hiện nào, $U_1 / z < 2$. Để thấy rằng đánh giá $\rho(U_1)$ là chặt, ta xem xét chuỗi các bài toán với $n= 2, p_1 = w_1 = p_2 = w_2 = k$ và $c = 2k - 1$ với $U_1 = 2k - 1$ và $z = k$, nên $U_1 / z$ có thể nhận giá trị bất kỳ gần với 2 với giá trị $k$ đủ lớn.
+
+Rõ ràng tính toán của $z(C(KP))$ dựa trên chặn $U_1$ của Dantzig tốn thời gian $O(n)$ nếu các mặt hàng đã được sắp thứ tự. Nếu không, tính toán vẫn có thể là $O(n)$ nếu ta sử dụng thủ tục tìm kiếm phần tử chủ chốt sau đây.
+
+\subsection{Tìm kiếm phần tử chủ chốt trong thời gian $O(n)$}
+
+Với mỗi $j \in N$, định nghĩa $r_j = p_j / w_j$. \index{Tỷ lệ chủ chốt} (critical ratio) $r_s$ có thể được xác định bởi việc quyết định một phân hoạch của $N$ thành $J1 \cup JC \cup J0$ sao cho
+\begin{align}
+    r_j &> r_s, \quad \text{với} \quad j \in J1, \\
+    r_j &=r_s, \quad \text{với} \quad j \in JC, \\
+    r_j &< r_s, \quad \text{với} \quad j \in J0,
+\end{align}
+và
+\begin{equation}
+    \sum_{j \in J1}w_j \leq c < \sum_{j \in J1 \cup JC}w_j,
+\end{equation}
+
+Thủ tục này được đề xuất bởi Balas và Zemel vào năm 1980, quyết định dần $J1$ và $J0$ bằng cách sử dụng phép lặp. Tại mỗi vòng lặp, một giá trị tạm thời  $\lambda$ để phân hoạch một tập hợp các mặt hàng "free" hiện tại $N \setminus (J1 \cup J0)$. Khi phân hoạch cuối cùng đã được xác định, phần tử chủ chốt $s$ được xác định bằng cách lắp vào sức chứa còn lại của ba-lô $c - \sum_{j \in J1}w_j$ với các mặt hàng trong $JC$ theo bất kỳ thứ tự nào.
+
+
+\begin{algorithm}[!ht]
+\DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$s$}
+    \vspace{1em}
+    $J1 := \varnothing$\;
+    $J0 := \varnothing$\;
+    $JC := \{1, \dots, n\}$\;
+    $\bar{c} := c$\;
+    $partition := $ ``no''\;
+    \While{$partition := $ ``no''}
+    {
+        Xác định median $\lambda$ của các giá trị trong $R = \{p_j/w_j : j \in JC\}$\;
+        $G := \{j \in JC: p_j/w_i > \lambda\}$\;
+        $L := \{j \in JC: p_j/w_i < \lambda\}$\;
+        $E := \{j \in JC: p_j/w_i = \lambda\}$\;
+        $c':=\sum_{j\in E}w_j$\;
+        $c'':= c' + \sum_{j\in E}w_j$\;
+        \If{$c' > \bar{c}$}
+        {
+            \tcc{giá trị $\lambda$ quá nhỏ}
+            $J0:=J0\cup L \cup E$\;
+            $JC := G$\;
+        }
+        \Else
+        {
+            \tcc{giá trị $\lambda$ quá lớn}
+            $J1:=J1\cup G \cup E$\;
+            $JC := L$\;
+            $\bar{c} := \bar{c} - c''$\;
+        }
+    }
+    $J1 := J1 \cup G$\;
+    $J0 := J0 \cup L$\;
+    $JC := E (=\{e_1, e_2, \dots, e_q\})$\;
+    $\bar{c} := \bar{c} - c'$\;
+    $\sigma := \min\{j:\sum_{i=1}^jw_{e_i} > \bar{c}\}$\;
+    $s:= e_\sigma$\;
+    \caption{Thủ tục CRITICAL\_ITEM}
+\end{algorithm}
+
+Việc tìm kiếm trung vị của $m$ phần tử tốn thời gian là $O(m)$, thế nên mỗi vòng lặp ``while'' tốn $O(|JC|)$. Bởi vì ít nhất một nửa số lượng phần tử của $JC$ được lược bỏ tại mỗi vòng lặp, độ phức tạp thời gian tổng thể của thủ tục là $O(n)$.
+
+Nghiệm của $C(KP)$ có thể được quyết định ngay sau đó bởi:
+\begin{align}
+    \bar{x}_j &= 1\quad \text{với}\quad j \in J1 \cup \{e_1, e_2, \dots, e_{\sigma - 1}\};\\
+    \bar{x}_j &= 0\quad \text{với}\quad j \in J0 \cup \{e_{\sigma+1}, \dots, e_{q}\};\\
+    \bar{x}_s &= \left(c - \sum_{j \in N \setminus \{s\}}w_j\bar{x}_j\right) / w_s.
+\end{align}
+
+\subsection{Nới lỏng Larange}
+
+Một cách thay thế để nới lỏng KP là sử dụng tiếp cận Larangian. Cho trước một nhân tử không âm $\lambda$, \index{nới lỏng Lagrangian} (Lagrangian relaxation) của KP $(L(KP, \lambda))$ là:
+\begin{align}
+    \label{eq:larangian_relaxation}
+    \text{maximize}\quad&\sum_{j = 1}^np_jx_j  + \lambda\left(c - \sum_{j=1}^nw_jx_j\right)\\
+     \text{subject to}\quad &  x_j = 0 \text{ or } 1, \quad j = 1, \dots, n.
+\end{align}
+
+Hàm mục tiêu có thể được viết lại như sau:
+\begin{equation}
+    % \label{eq:2.11}
+    \label{eq:2.11}
+    z(L(KP, \lambda)) = \sum_{j = 1}^n\widetilde{p}_jx_j + \lambda c, 
+\end{equation}
+trong đó $\widetilde{p}_j = p_j - \lambda w_j$ với $j = 1, \dots, n$ và nghiệm tối ưu của $L(KP, \lambda)$ có thể dễ dàng có được trong thời gian $O(n)$:
+\begin{equation}
+    % \label{eq:2.12}
+    \label{eq:2.12}
+    \widetilde{x}_j = \begin{cases}
+        1\quad\text{nếu}\quad \widetilde{p}_j > 0,\\
+        0\quad\text{nếu}\quad \widetilde{p}_j < 0,
+    \end{cases}
+\end{equation}
+Khi $\widetilde{p}_j = 0$, giá trị của $\widetilde{x}_j$ là không xác định. Do đó, bởi định nghĩa $J(\lambda) = \{j : p_j / w_j > \lambda \}$, giá trị nghiệm của $L(KP, \lambda)$ là:
+\begin{equation}
+    z(L(KP, \lambda)) = \sum_{j \in J(\lambda)}^n\widetilde{p}_jx_j + \lambda c.
+\end{equation}
+
+Với bất kỳ $\lambda \geq 0$, tồn tại một chặn trên $z(KP)$ mà có thể không thể tốt hơn chặn $U_1$ của Dantzig. Thật vậy, Biểu thức \eqref{eq:2.12} cũng cho ra nghiệm của nới \index{lỏng liên tục} của $L(KP, \lambda)$, thế nên:
+\begin{equation}
+    z(L(KP, \lambda)) = z(C(L(KP, \lambda))) \geq z(C(KP)).
+\end{equation}
+
+Giá trị của $\lambda$ sinh ra giá trị nhỏ nhất của $z(L(KP, \lambda))$ là $\lambda^* = p_s / w_s$. Thật vậy, với giá trị này, ta có $\widetilde{p}_j \geq 0$ với $j = 1, \dots, s - 1$ và $\widetilde{p_j}\leq 0$ với $j = s, \dots, n$, thế nên $J(\lambda^*) \subseteq \{1, \dots, s - 1\}$. Do đó mà, $\widetilde{x}_j = \bar{x}_j$ với $j \in N \setminus \{s\}$ (trong đó $\bar{x}_j$ được định nghĩa bởi Định lý~\ref{theorem:optimal_solution_ckp}, và tử các Biểu thức \eqref{eq:2.11} - \eqref{eq:2.12}, $z(L(KP, \lambda^*)) = \sum_{j=1}^{s-1}(p_j - \lambda^*w_j) + \lambda^*c = z(C(KP))$. Và cũng để ý rằng, với $\lambda = \lambda^*$, $\widetilde{p}_j$ trở thành:
+\begin{equation}
+    \label{eq:2.13}
+    p_{j}^* = p_j - w_j \frac{p_s}{w_s};
+\end{equation}
+
+Ta thấy $|p_{j}^* |$ là mức giảm mà ta thu được trong Biểu thức của $z(L(KP, \lambda^*))$ bởi thiết lập $\widetilde{x}_j = 1 - \widetilde{x}_j$, và do đó một chặn dưới (lower bound) tương ứng với sự giảm này trong giá trị nghiệm liên tục (bởi vì giá trị tối ưu $\lambda$ thay đổi bởi sự áp đặt của các điều kiện trên). Giá trị $|p_{j}^* |$ sẽ rất hữu ích trong các thiết lập nhằm cải thiện các chặn của bài toán.
+
+\section{Cải thiện các chặn bài toán}
+
+Ta xem xét chặn trên thống trị bởi Dantzig, nó rất hữu ích trong việc cải thiện hiệu quả trung bình của các thuật toán cho KP. Bởi vì tính chất thống trị này, tỷ lệ hiệu suất trường hợp xấu nhất của các chặn này là nhiều nhất 2. Thực vậy, nó chính xác bằng 2 vì có thể dễ dàng xác minh thông qua một chuỗi các ví tương tự mà có $p_j = w_j$ với mọi $j$ (thế nên các chặn nhận giá trị tầm thường $c$).
+
+\subsection{Chặn từ các ràng buộc bổ sung}
+
+Martello và Toth thu được một chặn trên thống trị đầu tiên so với Dantzig bằng cách áp đặt tính toàn vẹn của biến chủ chốt (critical variable) $x_s$.
+
+\begin{theorem}[Martello và Toth, 1977]
+    Đặt:
+    \begin{align}
+        \label{eq:2.14}
+        U^0 &= \sum_{j = 1}^{s - 1}p_j + \left \lfloor\bar{c}\frac{p_{s+1}}{w_{s+1}} \right \rfloor\\
+        \label{eq:2.15}
+        U^1 &= \sum_{j = 1}^{s - 1}p_j + \left \lfloor p_s - (w_s - \bar{c})\frac{p_{s-1}}{w_{s-1}}\right \rfloor
+    \end{align}
+    trong đó $s$ và $\bar{c}$ là các giá trị được định nghĩa bởi Biểu thức \eqref{eq:2.8} và \eqref{eq:2.9}. Thì
+    \begin{enumerate}[label=(\alph*)]
+        \item một chặn trên $z(KP)$ là
+        \begin{equation}
+            \label{eq:2.16}
+            U_2 = \max(U^0, U^1);
+        \end{equation}
+        \item với bất kỳ thể hiện của KP, ta có $U_2 \leq U_1$.
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    Chứng minh ý (i). Bởi vì $x_s$ không thể nhận giá trị phân số, nghiệm tối ưu của bài toán KP có thể thu được từ nghiệm liên tục $\bar{x}$ của $C(KP)$ mà không cần thêm phân tử $s$ (tức là, áp đặt $\bar{x}_s = 0$) hay thêm nó (tức là, áp đặt $\bar{x}_s = 1$) và do đó ta loại bỏ ít nhất một trong $s - 1$ item đầu tiên. Trong một trường hợp tổng quát hơn, nghiệm tối ưu không thể vượt quá $U^0$ mà tương ứng với trường hợp lắp đầy phần dư $\bar{c}$ với các item có giá trị phù hợp nhất của $p_j / w_j$ (tức là $p_{s + 1} / w_{s + 1}$. Hơn nữa, nó không thể vượt quá $U^1$ trong khi đó ta giả định rằng item cần được loại bỏ có giá trị nhỏ nhất là $w_j$ (tức là $w_s - \bar{c}$ và giá trị xấu nhất có thể của $p_j / w_j$ (tức là $p_{s - 1} / w_{s - 1}$).
+
+    Chứng minh ý (ii) Đánh giá $U^0 \leq U^1$ có thể suy ra trực tiếp từ Biểu thức \eqref{eq:2.10}, \eqref{eq:2.14} và \eqref{eq:2.7}. Để chứng minh $U^1 \leq U_1$ cũng thỏa mãn, ta để ý rằng $p_s / w_s \leq p_{s - 1} / w_{s - 1}$ (từ Biểu thức \eqref{eq:2.7}) và $\bar{c} < w_s$ (từ biểu thức \eqref{eq:2.8}, \eqref{eq:2.9}). Thế nên
+    \begin{equation*}
+        (\bar{c} - w_s)\left(\frac{p_s}{w_s} - \frac{p_{s-1}}{w_{s-1}}\right)
+    \end{equation*}
+    và bằng cách biến đổi đại số, ta có:
+    \begin{equation*}
+        \bar{c}\frac{p_s}{w_s} \geq p_s - (w_s - \bar{c})\frac{p_{s-1}}{w_{s-1}},
+    \end{equation*}
+    Suy ra điều phải chứng minh.
+
+    Chứng minh hoàn tất.
+\end{proof}
+
+Độ phức tạp thời gian cho việc tính toán $U_2$ là $O(n)$ khi một phần tử chủ chốt đã biết trước.
+
+\begin{example}
+    \label{eq:example_2.1}
+    Xem xét một thể hiện của bài toán KP được định nghĩa như sau:
+    \begin{align*}
+        n &= 8\\
+        (p_j) &= (15, 100, 90, 60, 40, 15, 10, 1)\\
+        (w_j) &= (2, 20, 20, 30, 40, 30, 60, 10)\\
+        c &= 102.\\
+    \end{align*}
+    Nghiệm tối ưu là $x = (1, 1, 1, 1, 0, 1, 0, 0)$ có giá trị $z = 280$. Từ Biểu thức \eqref{eq:2.8}, ta có $s = 5$. Do vậy:
+    \begin{align*}
+        U_1 &= 265 + \left \lfloor 30 \times \frac{40}{40}\right \rfloor = 295\\
+        U^0 &= 265 + \left \lfloor 30 \times \frac{15}{30}\right \rfloor = 280\\
+        U^1 &= 265 + \left \lfloor 40 - 10 \times \frac{60}{30}\right \rfloor = 285\\
+        U_2 &= 285
+    \end{align*}
+\end{example}
+
+Chặn Martello và Toth có thể được khám phá sâu hơn nữa để tính toán toán các chặn trên ngặt hơn $U_2$. Ta có thể đạt được bằng cách thay thế các giá trị $U^0$ và $U^1$ với các giá trị chặt hơn, đặt là $\overline{U}^0$ và $\overline{U}^1$ mà dùng \index{phép bao} (inlusion) và \index{phép loại trừ} (exclusion) item $s$ cẩn thận hơn. Hudson (1977) đã đề xuất cách tính toán $\overline{U}^1$ với giá trị nghiệm của nới lỏng liên tục của KP với các ràng buộc bổ sung $x_s = 1$. Fayard và Plateau (1982) cùng với Villela và Bornstein (1983) độc lập đề xuất cách tính toán $\overline{U}^0$ với giá trị nghiệm của $C(KP)$ với các ràng buộc bổ sung $x_s = 0$.
+
+Bởi định nghĩa các phần tử chủ chốt lần lượt là $\sigma^1(j)$ và $\sigma^0(j)$ khi ta đặt $x_j = 1 (j \geq s)$ và $x_j = 0 (j \leq s)$ thì
+\begin{align}
+    \label{eq:2.17}
+    \sigma^1(j) &= \min\left\{k : \sum_{i=1}^kw_i > c - w_j\right\},\\
+    \label{eq:2.18}
+    \sigma^0(j) &= \min\left\{k : \sum_{i=1, i \ne j}^kw_i > c\right\},\\
+\end{align}
+ta thu được
+\begin{align}
+    \label{eq:2.19}
+    \overline{U}^0 &= \sum_{j = 1, j \ne s}^{\sigma^0(s) - 1}p_j + \left \lfloor\left(c - \sum_{j = 1, j \ne s}^{\sigma^0(s) - 1}w_j\frac{p_{\sigma^0(s)}}{w_{\sigma^0(s)}}\right) \right \rfloor,\\
+    \label{eq:2.20}
+    \overline{U}^1 &= p_s + \sum_{j = 1}^{\sigma^1(s) - 1}p_j + \left \lfloor\left(c - w_s - \sum_{j = 1}^{\sigma^1(s) - 1}w_j\frac{p_{\sigma^1(s)}}{w_{\sigma^1(s)}}\right) \right \rfloor,\\
+\end{align}
+và ta có một chặn trên mới
+\begin{equation}
+    U_3 = \max\left(\overline{U}^0, \overline{U}^1\right).
+\end{equation}
+
+Hiển nhiên, ta có:
+\begin{enumerate}[label=(\alph*)]
+    \item $\overline{U}^0 \leq U^0$ và $\overline{U}^1 \leq U^1$, thế nên $U_3 \leq U_2$;
+    \item Độ phức tạp thời gian cho tính toán giá trị chặn $U_3$ bằng với khi tính toán chặn $U_1$ và $U_2$, $O(n)$.
+\end{enumerate}
+
+\begin{example}
+    \label{eq:example_2.1_cont1}
+    Từ các Biểu thức \eqref{eq:2.17}-\eqref{eq:2.20}, ta có:
+    \begin{align*}
+        \sigma^0(5) &= 7, \overline{U}^0 = 280 + \left \lfloor 0 \times \frac{10}{60} \right  \rfloor = 280;\\
+        \sigma^1(5) &= 4, \overline{U}^1 = 40 + 205 +\left \lfloor 20 \times \frac{60}{30} \right  \rfloor = 285;\\
+        U_3 &= 285.
+    \end{align*}
+\end{example}
+
+\subsection{Chặn từ các nới lỏng Larange}
+
+Một chặn tính toán khác trong thời gian $O(n)$ có thể được mô tả thông qua nới lỏng Larangian của bài toán này. Nhắc lại:
+\begin{equation*}
+    z(C(KP)) = z(L(KP, \lambda^*))
+\end{equation*}
+và $|p_j^*$ là một chặn dưới giảm của $z(C(KP))$ tương ứng với sự thay đổi của biến thứ $j$ từ $\bar{x}_j$ thành $1 - \bar{x}_j$.
+
+Muller-Merbach (1977) đã nhận tháy rằng để mà thu được một nghiệm nguyên từ bài toán liên tục, hoặc (a) tỷ lệ biến $\bar{x}_s$ phải được giảm về 0 (mà không có bất kỳ sự thay đổi nào của các biến khác) hoặc (b) có ít nhất một trong các biến khác, ký hiệu là $\bar{x}_j$ thay đổi giá trị của nó (từ 1 thành 0 hoặc từ 0 thành 1). Trong trường hợp (a), giá trị của $z(C(KP))$ giảm bằng $\bar{c}p_s / w_s$, trong trường hợp (b) thì giảm bằng ít nhất $|p_j^*|$. Do đó, ta có chặn Muller-Merbach như sau:
+\begin{equation}
+    \label{eq:2.21}
+    U_4 = \max\left(\sum_{j = 1}^{s - 1}\max\{\left \lfloor z(C(KP)) - |p^**_j|\right \rfloor : j \in N \setminus \{s\}\}\right).
+\end{equation}
+
+Ta có thể trực tiếp suy ra $U_4 \leq U_1$. Thay vào đó, không có sự thống trị nào tồn tại giữa $U_4$ và các chặn khác. Như ở Ví dụ~\ref{eq:example_2.1}, ta có $U_3 = U_2 < U_4$, nhưng không khó để tìm thấy ví dụ mà $U_4 < U_3 \leq U_2$.
+
+Ý tưởng đằng sau các chặn $U_2$, $U_3$ và $U_4$ được nghiên cứu sâu hơn bởi Dudzinski và Walukiewicz. Họ đã thu được một chặn thống trị tất cả các chặn trên. Ta xem xét bất kỳ nghiệm khả thi $\hat{x}$ nào của bài toán KP mà ta có thể có được từ bài toán liên tục như sau:
+\begin{algorithm}
+    \caption{Thủ tục tìm nghiệm khả thi Dudzinski-Walukiewicz}
+    \For{với mỗi $k \in N\setminus\{s\}$}
+    {
+        $\hat{x}_k := \bar{x}_k$\;
+    }
+    $\hat{x}_s := 0$\;
+    \For{với mỗi $k$ mà $\hat{x}_k = 0$}
+    {
+        \If{$w_k \leq c - \sum_{j=1}^nw_j\hat{x}_j$}
+        {
+            $\hat{x}_k := 1$
+        }
+    }
+\end{algorithm}
+và định nghĩa $\hat{N} = \{j \in N \setminus \{s\}: \hat{x}_j = 0\}$ ($\hat{x}$ gần với nghiệm nhận được bởi thủ tục tham lam nhất). Để ý rằng một nghiệm nguyên tối ưu có thể nhận được trong trường hợp (a) bởi thiết lặp $x_s = 1$ hoặc trong trường hợp (b) bởi thiết lập $x_s = 0$ và $x_j = 1$ với ít nhất một $j \in \hat{N}$, ta có chặn Dudzinski-Walukiewicz như sau:
+\begin{equation}
+    \begin{aligned}
+        \label{eq:2.22}
+        U_5 = \max(&\min(\overline{U}^1, \max\{\left \lfloor z(C(KP)) - |p^**_j|\right \rfloor : j = 1, \dots, s - 1\}),\\
+        &\min(\overline{U}^0, \max\{\left \lfloor z(C(KP)) + |p^**_j|\right \rfloor : j \in \hat{N}\}),\\
+        &\sum_{j=1}^np_j\hat{x}_j)
+    \end{aligned}
+\end{equation}
+trong đó $\overline{U}^0$ và $\overline{U}^1$ được cho bởi các Biểu thức \eqref{eq:2.19}  và \eqref{eq:2.20}. Độ phức tạp thời gian là $O(n)$.
+
+\begin{example}
+    Tiếp tục xem xét ví dụ~\ref{eq:example_2.1}. Từ biểu thức \eqref{eq:2.13}, ta có:
+    \begin{equation*}
+        (p_j^*) = (13, 80, 70, 30, 0, -15, -50, -9)
+    \end{equation*}
+    Do đó:
+    \begin{align*}
+        U_4 &= \max(265, \max\{282, 215, 225, 265, 280, 245, 286\}) = 286\\
+        (\hat{x}_j) &= (1, 1, 1, 1, 0, 1, 0, 0)\\
+        U_5 &= \max(\min(285, \max\{282, 215, 225, 265\}), \min(280, \max\{245, 286\}), 280) = 282.
+    \end{align*}
+\end{example}
+
+\subsection{Chặn từ liệt kê riêng phần}
+
+Chặn $U_3$ có thể được xem như kết quả của việc ứng dụng chặn Dantzig tại hai nút lá (terminal nodes) của một câu quyết định tương ứng với bài toán KP và hai \index{nút con cháu} (descendent nodes) $N0$ và $N1$ tương ứng với phép bao và loại trừ phần từ $s$. Rõ ràng cực đại giữa các chặn trên tương ứng với tất cả các nút lá của một cây quyết định biểu diễn một chặn trên hợp lệ cho bài toán gốc ứng với nút gốc. Vì thế, nếu $\overline{U}^0$ và $\overline{U}^1$ là các chặn Dantzig tương ứng với các nút $N0$ và $N1$, thì $U_3$ biểu diễn một chặn trên hợp lệ cho bài toán KP.
+
+Một chặn cải thiện $U6$ có thể thu được nhờ việc xem xét các cây quyết định có nhiều hơn hai nút lá được đề xuất bởi Martello và Toth (1988).
+
+Để trình bày nội dung của chặn này, ta giả sử $s$ đã được xác định, đặt $r, t$ lần lượt là bất kỳ item nào mà thỏa mãn $1 < r \leq s$ và $s \leq t < n$. Ta thu được một nghiệm khả thi cho bài toán KP bằng cách thiết lặp $x_j = 1$ với $j < r$, $x_j = 0$ với $j > t$ và tìm kiếm nghiệm tối ưu cho bài toán KP con $KP(r, t)$ bằng cách định nghĩa các item $r, r + 1, \dots, t$ với lực lượng giảm $c(r) = c - \sum_{j = 1}^{r - 1}w_j$. 
+
+Giả sử rằng bài toán $KP(r, t)$ được giải thông qua một cây quyết định nhị phân cơ sở mà phát sinh các cặp của các nút quyết định bởi thiết lập lần lượt $x_j = 1$ và $x_j = 0$ với $j =r, r+1, \dots, t$,; mỗi nút $k$ (đã thu được, đặt cố định $x_j$) phát sinh ra một cặp con cháu (cố định bởi $x_{j+1}$) nếu và chỉ nếu $j < t$ và nghiệm tương ứng $k$ tồn tại. Với mỗi nút $k$ của cây kết quả, gọi $f(k)$ là item từ nút này được phát sinh (bởi thiết lặp $x_{f(k)} = 1 \vee 0$) và đặt $x_j^k (j = r, \dots, f(k))$ là dãy các giá trị được gán đến các biến $x_r, \dots, x_{f(k)}$ dọc theo đường đi trong cây từ nút gốc đến $k$. Tập hợp các nút lá của cây có thể được phân hoạch thành:
+
+\begin{align*}
+    L_1 &= \left\{l: \sum_{j = r}^{f(l)} w_jx_j^l > c(r)\right\}\quad\text{lá không khả thi (infeasible leaves)},\\
+    L_2 &= \left\{l:f(l) = t \quad\wedge\quad \sum_{j = r}^{f(l)}w_jx_j^l \leq c(r) \right\}\quad\text{lá khả thi (feasible leaves)}.
+\end{align*}
+
+Với mỗi $l \in L1 \cup L2$, gọi $u_l$ là bất kỳ chặn trên nào của bài toán được định nghĩa bởi biểu thức \eqref{eq:2.1}, \eqref{eq:2.2} và 
+\begin{equation}
+    \label{eq:2.23}
+    \begin{cases}
+        x_j = x_j^l \quad\text{nếu}\quad j \in \{r, \dots, f(l)\},\\
+        x_j = 0 \vee 1 \quad\text{nếu}\quad j \in N\setminus\{r, \dots, f(l)\},\\
+    \end{cases}
+\end{equation}
+
+Bởi vì tất cả các nút không phải lá là có thể tìm thấy bởi cây, một chặn trên hợp lệ cho bài toán KP được cho bởi Biểu thức sau:
+\begin{equation}
+    \label{eq:2.24}
+    U_6 = \max\{u_l: l \in L1 \cup L_2\}.
+\end{equation}
+
+Một cách để tính nhanh $u_l$ có thể được mô tả như sau. Gọi $p^l = \sum_{j=1}^{r-1}p_j + \sum_{j=r}^{f(l)}p_jx_j^l$ và $d^l = |c(r) - \sum_{j=r}^{f(l)}w_jx_j^l|$; thì
+\begin{equation}
+    \label{eq:2.25}
+    u_l = \begin{cases}
+        \left \lfloor p_l - d^l\frac{p_{r-1}}{w_{r-1}} \right \rfloor\quad\text{nếu}\quad l \in L_1;\\
+         \left \lfloor p_l + d^l\frac{p_{t+1}}{w_{t+1}} \right \rfloor\quad\text{nếu}\quad l \in L_2;
+    \end{cases}
+\end{equation}
+rõ ràng là một chặn trên cho giá nghiệm liên tục của bài toán \eqref{eq:2.1}, \eqref{eq:2.2} và \eqref{eq:2.23}.
+
+Tính toán của $U_6$ cần $O(n)$ để quyết định phần tử chủ chốt và định nghĩa bài toán $KP(r, t)$, cộng với $O(2^{t-r})$ để duyệt \index{cây nhị phân}. Nếu $t - r$ bị chặn bởi một hằng, thì tổng độ phức tạp thời gian là $O(n)$.
+
+
+\begin{example}
+    Giả sử rằng $r = 4$ và $t = 6$. Sức chứa được giảm thiểu là $c(r) = 60$. Cây nhị phân được minh họa ở Hình~\ref{fig:bound_u6_ex2.1}. Tập các lá $L_1 = \{2, 8\}$, $L_2 = \{4, 5, 9, 11, 12\}$. Suy ra, $U_6 = 280$ là giá trị nghiệm tối ưu.
+    \begin{figure}[H]
+        \centering
+        \includesvg[width=1\columnwidth]{figures/Figure_2.1.svg}
+        \caption{Cây nhị phân của chặn $U_6$ cho Ví dụ~\ref{eq:example_2.1}}
+        \label{fig:bound_u6_ex2.1}
+    \end{figure}
+\end{example}
+
+Các chặn trên tại các nút lá có thể được đánh giá bằng cách sử dụng bất kỳ chặn đã được mô tả phía trên thay vì sử dụng \eqref{eq:2.25}. Nếu $U_k (k = 1, \dots, 5$ được sử dụng, thì rõ ràng $U_6 \leq U_k$; Nếu chặn ở biểu thức \eqref{eq:2.25} được sử dụng thì không có thống trị tồn tại giữa $U_6$ và chặn Dudzinski-Walukiewicz, thế nên chặn trên tốt nhất cho bài toán KP là 
+\begin{equation*}
+    U = \min(U_5, U_6).
+\end{equation*}
+
+Chặn $U_6$ có thể ngặt với một lượng nhỏ công sức tính toán bởi đánh giá $w_m = \min\{w_j : j > t\}$. Không quá khó để thấy rằng khi $l \in L_2$ và $d^l < w_m$, $u_l$ có thể được tính toán bởi công thức như sau:
+\begin{equation}
+    \label{eq:2.26}
+    u_l = \max\left(p^l, \left \lfloor p^l + w_m\frac{p_{t+1}}{w_{t+1}} - (w_m - d^l)\frac{p_{r-1}}{w_{r-1}}\right \rfloor\right).
+\end{equation}
+
+Cuối cùng, ta để ý rằng tính toán của $U_6$ có thể được đẩy nhanh bằng cách sử dụng một thuật toán nhánh cận bất kỳ để giải quyết bài toán $KP(r, t)$. Tại bất kỳ vòng lặp nào của thuật toán, gọi $\bar{z}(r, t)$ là giá trị của nghiệm tốt nhất. Với các nút không phải lá bất kỳ $k$ của cây quyết định, gọi $\bar{u}_k$ là một chặn trên của nghiệm tối ưu của bài toán con được định nghĩa bởi các item $r, \dots, n$ với \index{lực lượng giảm} $c(r)$, tức là bài toán con thu được nhờ sử dụng thiết lặp $x_j = 1$ với $j = 1, \dots, r - 1$. $\bar{u}_k$ có thể được tính như là một chặn trên của giá trị nghiệm liên tục của bài toán, tức:
+
+\begin{align}
+    \label{eq:2.27}
+    \bar{u}_k & = \sum_{j = r}^{f(k)}p_jx_j^k + \sum_{j = f(k) + 1}^{s(k) - 1}p_j \\
+    &= \left \lfloor \left(c(r) - \left(\sum_{j = r}^{f(k)}w_jx_j^k + \sum_{j = f(k) + 1}^{s(k) - 1}w_j\right)\right) \frac{p_{s(k)}}{w_{s(k)}} \right \rfloor
+\end{align}
+trong đó $s(k) := \min(t + 1, \min\{i : \sum_{j = r}^{f(k)}w_jx_j^k + \sum_{j = f(k) + 1}^{i}w_j > c(r)\})$. Nếu ta có đánh giá $\bar{u}_k \leq \bar{z}(r, t)$, các đỉnh con cháu từ $k$ không được phát sinh. Thật vậy, với bất kỳ nút lá $l$ nào là con cháu từ $k$, nó sẽ có kết quả là 
+\begin{equation*}
+    u_l \leq \sum_{j=1}^{r - 1}p_j + \bar{u}_k \leq \sum_{j = 1}^{r - 1}p_j + z(KP(r, t)) \leq U_6
+\end{equation*}
+
+\begin{example}
+    Thực hiện tính toán thông qua Biểu thức~\ref{eq:2.27}, ta thu được cây quyết định lược giản như Hình sau:
+    \begin{figure}[H]
+        \centering
+        \includesvg[width=1\columnwidth]{figures/Figure_2.2.svg}
+        \caption{Cây nhị nhánh cận của chặn $U_6$ cho Ví dụ~\ref{eq:example_2.1}}
+        \label{fig:rbanhbound_u6_ex2.1}
+    \end{figure}
+\end{example}
+
+

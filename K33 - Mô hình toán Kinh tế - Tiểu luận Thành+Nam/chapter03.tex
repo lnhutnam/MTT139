@@ -1,0 +1,714 @@
+\chapter{THUẬT TOÁN CHO BÀI TOÁN 0-1 KNAPSACK}
+
+
+\section{Thuật toán tham lam}
+
+Một trong những cách trực tiếp để xác định một nghiệm xấp xỉ của bài toán KP là tìm kiếm nghiệm $\bar{x}$ của nới lỏng liên tục của bài toán mà chỉ có một biến phân số, $\bar{x}_s$ (Xem Định lý \ref{theorem:optimal_solution_ckp}). Ta thiết lập biến này bằng $0$ để lấy một nghiệm khả thi của bài toán KP có giá trị là:
+\begin{equation*}
+    z' = \sum_{j=1}^{s - 1}p_j.
+\end{equation*}
+Ta có thể kỳ vọng $z'$ này tương đối gần với giá trị nghiệm tối ưu $z$. Thật vậy, $z' \leq z \leq U_1 \leq z' + p_s$, tức là độ lỗi tuyệt đối bị chặn bởi một số $p_s$. Nhưng, tỷ lệ hiệu suất trường hợp xấu nhất hiển nhiên tệ. Điều này có thể được chứng minh bởi một chuỗi các bài toán với $n = 2, p_1 = w_1 = 1, p_2 = w_2 = k$ và $c = k$ mà trong đó $z' = 1$ và $z = k$, vì thế tỷ lệ $z'/z$ gần với 0 khi $k$ đủ lớn.
+
+Để ý rằng, trường hợp trên xuất hiện khi mà $p_s$ đủ lớn, ta có thể thu được một heuristic cải thiện hơn cũng bằng cách xem xét nghiệm khả thi được cho bởi phần tử chủ chốt duy nhất và lấy ra nghiệm tốt nhất trong hai giá trị nghiệm, tức là:
+\begin{equation}
+    \label{eq:2.28}
+    z^h = \max(z', p_s).
+\end{equation}
+Tỷ lệ trường hợp xấu nhất của heuristic mới này là $\frac{1}{2}$. Thật vậy, $z \leq z' + p_s$, thế nên từ Biểu thức \eqref{eq:2.28}, ta được $z \leq 2z^h$. Để thấy rằng tỷ lệ $\frac{1}{2}$ là chặt, ta xem xét chuỗi bài toán với $n = 3, p_1 = w_1 = 1, p_2 = w_2 = p_3 = w_3 = k$ và $c = 2k$, ta có: vì $z^h = k + 1$ và $z=2k$, nên $z^h/z$ nhận giá trị bất kỳ gần với $\frac{1}{2}$ khi $k$ đủ lớn. 
+
+Tính toán của $z^h$ có độ phức tạp thời gian là $O(n)$ khi mà phần tử chủ chốt đã biết. Nếu các item được sắp xếp như trong Biểu thức \eqref{eq:2.7}, một thuật toán hiệu quả hơn có thể được sử dụng cho chúng giảm dần tương ứng với các chỉ số và thêm vào một phần tử mới cho ba-lô nếu nó đầy. Để ý rằng $1,\dots, s - 1$ luôn luôn được thêm vào, vì thế mà giá trị nghiệm ít nhất là $z'$. Một phương pháp heuristic phổ biến cho bài toán KP thường được gọi là \emph{thuật toán tham lam (Greedy algorithm)}. Một lần nữa, hiệu suất trường hợp xấu nhất có thể tệ, nhưng được cải thiện đến gần $\frac{1}{2}$ nếu ta xem xét nghiệm được cho bởi phần tử của lợi ích cực đại như trong cài đặt thủ tục phía sau đây. Giả sử rằng các item có thứ tự ứng với Biểu thức \eqref{eq:2.7}.
+
+\begin{algorithm}[!ht]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z^g, (x_j)$}
+    \vspace{1em}
+
+    $\bar{c} :=  c$;\\
+    $z^g := 0$\\
+    $j^* := 1$;\\
+    \For{$j:=1$ to $n$} 
+    {
+        \If{$w_j > \bar{c}$}
+        {
+            $x_j := 0$
+        }
+        \Else
+        {
+            $x_j := 1$;\\
+            $\bar{c} := \bar{c} - w_j$;\\
+            $z^g := z^g + p_j$;\\
+        }
+        \If{$p_j > p_{j^*}$}
+        {
+            $j^* := j$
+        }
+    }
+    \If{$p_{j^*} > z^g$}
+    {
+        $z^g := p_{j^*}$;\\
+        \For{$j:=1$ to $n$}
+        {
+            $x_j := 0$;\\
+        }
+        $x_{j^*} := 1$
+    }
+    \caption{Thủ tục GREEDY}
+\end{algorithm}
+
+Tỷ lệ hiệu suất xấu nhất là $\frac{1}{2}$ vì:
+\begin{itemize}
+    \item $p_j^* \geq p_s$ nên $z^g \geq z^h$;
+    \item Chuỗi các bài toán được thêm vào cho $z^h$ chứng minh tính ngặt
+\end{itemize}
+Độ phức tạp thời gian là $O(n)$, cộng với $O(n\log n)$ với thủ tục sắp xếp khởi tạo.
+
+% \begin{example}
+%      Xem xét Ví dụ \ref{eq:example_2.1}, ta có $z'=z^h=265$ và $z^g = 280$ là giá trị nghiệm tối ưu bởi vì $U_6 = 280$.
+% \end{example}
+
+\begin{example}
+Giả sử chúng ta có 4 vật phẩm với trọng lượng và giá trị như sau:
+\[
+\begin{array}{|c|c|c|}
+\hline
+\text{Vật phẩm} & \text{Trọng lượng} (w_j) & \text{Giá trị} (p_j) \\
+\hline
+1 & 2 & 100 \\
+2 & 4 & 120 \\
+3 & 3 & 40 \\
+4 & 5 & 50 \\
+\hline
+\end{array}
+\]
+
+Dung lượng của ba lô $c = 5$.
+
+\[
+\text{Khởi tạo:} \quad \bar{c} = 5, z^g = 0, j^* = 1
+\]
+\textbf{Thực hiện thuật toán GREEDY}
+\begin{itemize}
+    \item [\textbf{1}]. \textbf{Vật phẩm 1:}
+        \begin{itemize}
+            \item [-] $w_1 = 2$, $w_1 \leq \bar{c}$, chọn $x_1 = 1$, cập nhật $\bar{c} = 5 - 2 = 3$, $z^g = 0 + 100 = 100$.
+            \item [-] So sánh $p_1 = 100$ với $p_{j^*} = 100$, không thay đổi $j^*$.
+        \end{itemize}
+    \item [\textbf{2}]. \textbf{Vật phẩm 2:}
+        \begin{itemize}
+            \item [-] $w_2 = 4$, $w_2 \geq \bar{c}$, không chọn $x_2$.
+            \item [-] So sánh $p_2 = 100$ với $p_{j^*} = 120$, cập nhật $j^* = 2$.
+        \end{itemize}
+    \item [\textbf{3.}] \textbf{Vật phẩm 3:}
+        \begin{itemize}
+            \item [-] $w_3 = 3$, $w_3 = \bar{c}$, chọn $x_3 = 1$, cập nhật $\bar{c} = 3 - 3 = 0$, $z^g = 100 + 40 = 140$.
+            \item [-] So sánh $p_2 = 100$ với $p_{j^*} = 40$, không cập nhật.
+        \end{itemize}
+    \item [\textbf{4.}] \textbf{Vật phẩm 4:}
+        \begin{itemize}
+            \item [-] $w_4 = 5$, $w_4 > \bar{c}$, không chọn $x_4 = 0$.
+        \end{itemize}
+\end{itemize}
+\textbf{Kiểm tra giá trị lớn nhất}
+
+- So sánh $p_{j^*} = 120$ với $z^g = 140$, không cần thay đổi.
+
+\textbf{Kết quả cuối cùng}
+\[
+z^g = 140, \quad (x_1 = 1, x_2 = 0, x_3 = 1, x_4 = 0)
+\]
+
+Thuật toán tham lam đã chọn vật phẩm 1 và 3 với tổng giá trị là 140.
+\end{example}
+
+Khi bài toán knapsack nhị phân được phát biểu trong dạng cực tiểu thì nó có thể được giải quyết bằng cách sử dụng tham lam đến dạng cực đại tương ứng của nó, và ta cũng có thể thu được một nghiệm khả thi, nhưng hiệu suất trường hợp xấu nhất không được bảo toàn. Thật vậy, xem xét chuỗi bài toán tối tiểu với $n=3, p_1 = w_1 = k, p_2 = w_2 =1, p_3 = w_3 = k$ và $q = 1$, có giá trị nghiệm tối ưu bằng 1. Khi áp dụng thủ tục tham lam cho dạng cực đại (với $c = 2k$), ta có thể $z^g = k + 1$ và vì thế ta thu được một nghiệm heuristic tệ của giá trị $k$ cho bài toán tối tiểu.
+
+\begin{example}
+Cho một ba lô có sức chứa \( W = 50 \) và ba vật phẩm có giá trị và trọng lượng như sau:
+
+\[
+\begin{array}{|c|c|c|c|}
+\hline
+\text{Vật phẩm} & \text{Giá trị} (p) & \text{Trọng lượng} (w) & \frac{p}{w} \ (\text{Tỉ lệ giá trị/trọng lượng}) \\
+\hline
+1 & 60 & 10 & 6.0 \\
+2 & 100 & 20 & 5.0 \\
+3 & 120 & 30 & 4.0 \\
+\hline
+\end{array}
+\]
+
+Mục tiêu là chọn các vật phẩm sao cho tổng giá trị là lớn nhất mà tổng trọng lượng không vượt quá \( W = 50 \).
+
+\textbf{Áp dụng thuật toán Greedy:}
+
+Thuật toán \textit{greedy} chọn các vật phẩm theo thứ tự tỉ lệ giá trị/trọng lượng \( \frac{p}{w} \) lớn nhất trước. Lần lượt chọn như sau:
+
+\begin{itemize}
+    \item Vật phẩm 1 có \( \frac{p}{w} = 6.0 \), chọn vật phẩm 1 với trọng lượng 10, giá trị 60.
+    \item Vật phẩm 2 có \( \frac{p}{w} = 5.0 \), chọn vật phẩm 2 với trọng lượng 20, giá trị 100.
+    \item Vật phẩm 3 có \( \frac{p}{w} = 4.0 \), nếu chọn vật phẩm 3 (trọng lượng 30), tổng trọng lượng sẽ là \( 10 + 20 + 30 = 60 \), vượt quá giới hạn 50, nên không thể chọn.
+\end{itemize}
+
+Tổng trọng lượng của các vật phẩm được chọn là \( 10 + 20 = 30 \), và tổng giá trị là \( 60 + 100 = 160 \).
+
+\textbf{Nghiệm tối ưu:}
+
+Nếu chọn vật phẩm 2 và vật phẩm 3, tổng trọng lượng sẽ là \( 20 + 30 = 50 \), vừa bằng giới hạn của ba lô, và tổng giá trị là \( 100 + 120 = 220 \).
+
+\textbf{Kết luận:}
+
+Thuật toán \textit{greedy} đưa ra nghiệm với tổng giá trị là 160, trong khi nghiệm tối ưu thực tế có giá trị 220. Điều này chứng tỏ thuật toán \textit{greedy} không luôn tìm được nghiệm tối ưu trong bài toán ba lô.
+
+\end{example}
+
+Từ kết quả của ví dụ trên, ta thấy rằng, dù áp dụng chiến lược nào, thuật toán Greedy cho bài toán Knapsack 0/1 vẫn có thể dẫn đến nghiệm không tối ưu, mặc dù bài toán CKP (Continuous Knapsack Problem) luôn đạt được nghiệm chính xác. Do đó, để tìm nghiệm tối ưu cho bài toán Knapsack 0/1, cần phải sử dụng các phương pháp khác. Tuy nhiên, khi xử lý bài toán với dữ liệu lớn và chỉ cần một nghiệm đủ tốt, việc áp dụng thuật toán Greedy là lựa chọn hợp lý nhờ độ phức tạp thấp hơn.
+\section{Thuật toán quy hoạch động}
+Một tiếp cận cơ bản khác để giải quyết bài toán này là quy hoạch động. Đây là kỹ thuật được phát triển đầu tiên mà cho phép giải chính xác bài toán này và mặc dù mức độ quan trọng của nó đã giảm đáng kể so với kỹ thuật nhánh cận, nhưng nó vẫn rất thú vị để tìm hiểu.
+
+Cho trước một cặp số nguyên $m (1 \leq m \leq n)$ và $\hat{c} (0 \leq \hat{c} \leq c)$, xem xét một thể hiện con của bài toán KP bao gồm các đồ vật $1, \dots, m$ và dung lượng ba-lô $\hat{c}$. Đặt $f_m(\hat{c})$ là giá trị nghiệm tối ưu của nó, tức là:
+\begin{equation}
+    \label{eq:2.29}
+    f_m(\hat{c}) = \max\left\{\sum_{j=1}^mp_jx_j: \sum_{j=1}^mx_jx_j \leq \hat{c}, x_j = 0 \quad\text{or}\quad1\quad\text{với}\quad j = 1\dots, m\right\}
+\end{equation}
+Hiển nhiên, ta có:
+\begin{equation}
+    f_1(\hat{c}) = \begin{cases}
+        0,\quad\text{với}\quad \hat{c} = 0, \dots, w_1 -1;\\
+        p_1, \quad\text{với}\quad \hat{c} = w_1, \dots, c.\\
+    \end{cases}
+\end{equation}
+
+Quy hoạch động bao gồm quá trình $n$ giai đoạn (với $m$ tăng dần từ $1$ đến $n$) và tại mỗi giải đoạn $m > 1$, ta tính toán các giá trị $f_m(\hat{c})$ (với $\hat{c}$ tăng dần từ $0$ đến $c$) bằng cách sử dụng kỹ thuật đệ quy cổ điển (như các công trình của Bellman - 1954, Dantzig - 1957):
+\begin{equation*}
+    f_m(\hat{c}) = \begin{cases}
+        f_{m - 1}(\hat{c})\quad\text{với}\quad \hat{c} = 0, \dots, w_1 -1;\\
+        \max(f_{m - 1}(\hat{c}), f_{m - 1}(\hat{c} - w_m) + p_m)\quad\text{với}\quad \hat{c} = w_1, \dots, c.\\
+    \end{cases}
+\end{equation*}
+Ta gọi các nghiệm khả thi tương ứng với các giá trị $f_m(\hat{c})$ là các trạng thái (states). Nghiệm tối ưu của bài toán là trạng thái tương ứng với $f_n(c)$.
+
+Vào năm 1980, Toth đã suy ra được từ Biểu thức đệ quy Bellman một thủ tục hiểu quả để mà tính toán trạng thái của một giai đoạn. Trước tiên, ta cần định nghĩa được các giá trị sau đây trước khi thực hiện một giai đoạn $m$:
+\begin{align}
+    \label{eq:2.30}
+    v &= \min\left(\sum_{j=1}^{m-1}w_j, c\right);\\
+    \label{eq:2.31}
+    b &= 2^{m - 1};\\
+    \label{eq:2.32}
+    P_{\hat{c}} &= f_{m-1}(\hat{c}), \quad\text{với}\quad\hat{c} = 0, \dots, v;\\
+    \label{eq:2.33}
+    X_{\hat{c}} & = \{x_{m-1}, x_{m-2}, \dots, x_1\}\quad\text{với}\quad\hat{c} = 0, \dots, v;
+\end{align}
+trong đó $x_j$ định nghĩa giá trị của biến thứ $j$ trong nghiệm tối ưu riêng phần tương ứng với $f_{m-1}(\hat{c})$, tức là
+\begin{equation}
+    \hat{c} = \sum_{j=1}^{m-1}w_jx_j\quad\text{và}\quad f_{m-1}(\hat{c}) = \sum_{j=1}^{m-1}p_jx_j.
+\end{equation}
+Từ góc độ tính toán, ta có thể tối ưu tính toán bằng cách mã hóa mỗi tập $X_{\hat{c}}$ thành một chuỗi bit, 
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$v, b, (P_{\hat{c}}), (X_{\hat{c}}),(w_m), p_m$}
+    \KwOutput{$v, b, (P_{\hat{c}}), (X_{\hat{c}})$}
+    \vspace{1em}
+    \If{$v < c$}
+    {
+        $u:= v$;\\
+        $v := \min(v + w_m, c)$;\\
+        \For{$\hat{c} := u + 1$ to $v$}
+        {
+            $P_{\hat{c}} := P_u$;\\
+            $X_{\hat{c}} := X_u$;\\
+        }
+    }
+    \For{$\hat{c} := v$ to $w_m$ step $-1$}
+    {
+        \If{$P_{\hat{c}} < P_{\hat{c} - w_m} + p_m$}
+        {
+            $P_{\hat{c}} := P_{\hat{c} - w_m} + p_m$;\\
+            $X_{\hat{c}} := X_{\hat{c} - w_m} + b$;\\
+        }
+    }
+    $b := 2b$;\\
+    \caption{Thủ tục REC1}
+    \label{algo:rec1}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z, (x_j)$}
+    \vspace{1em}
+    \For{$\hat{c} := 0$ to $w_1 - 1$}
+    {
+        $P_{\hat{c}} := 0$;\\
+        $X_{\hat{c}} := 0$;\\
+    }
+    $v := w_1$;\\
+    $b := 2$;\\
+    $P_v := p_1$;\\
+    $X_v := 1$;\\
+    \For{$m:=2$ to $n$}
+    {
+        Gọi thủ tục REC1
+    }
+    $z := P_c$;\\
+    Xác định $(x_j)$ bằng cách decode $X_C$
+    \caption{Thủ tục DP1}
+    \label{algo:dp1}
+\end{algorithm}
+
+Thủ tục REC1 có độ phức tạp $O(c)$ nên độ phức tạp của thủ tục DP1 là $O(nc)$. Độ phức tạp không gian là $O(nc)$. Do ta đã mã hóa $X_{\hat{c}}$ thành một chuỗi bit theo ngôn ngữ máy gồn $d$ bit, nên không gian lưu trữ cần thiết là $(1 +\left \lceil n/d  \right \rceil)c$, trong đó $\left \lceil a\right \rceil$ là số nguyên nhỏ nhất mà không nhỏ hơn $a$.
+
+\subsection{Khử các trạng thái bị thống trị}
+
+Số lượng các trạng thái được xem xét tại mỗi giai đoạn trong thuật toán có thể được giảm đi đáng kể bằng cách khử các \emph{trạng thái bị thống trị (dominated states)}. Cụ thể, trong những trạng thái $(P_{\hat{c}}, X_{\hat{c}})$ mà tồn tại một trạng thái $(P_y, X_y)$ với $P_y \geq P_{\hat{c}}$ và $y < \hat{c}$ (bất kỳ nghiệm có thể thu được từ $(P_{\hat{c}}, X_{\hat{c}})$ thì có thể thu được từ $(P_y, X_y)$). Kỹ thật này được sử dụng bởi Horowitz và Sahni (1974) và Ahrens và Finke (1975). Những trạng thái không bị thống trị (undominated states) của giai đoạn thứ $m$ có thể được tính toán thông qua một thủ tục được đề xuất bởi Toth (1980). Trước khi bắt đầu thực thi thủ tục cho giai đoạn $m$, ta định nghĩa các biến giá trị như sau:
+\begin{align}
+    \label{eq:2.34}
+    s &= \text{số lượng trạng thái ở giai đoạn }(m - 1);\\
+    \label{eq:2.35}
+    b &= 2^{m-1};\\
+    \label{eq:2.36}
+    W1_i &= \text{tổng trọng số của trạng thái thứ }i (i=1, \dots, s);\\
+    \label{eq:2.37}
+    P1_i &= \text{tổng lợi ích của trạng thái thứ }i (i=1, \dots, s);\\
+    \label{eq:2.38}
+    X1_i &= \{x_{m-1}, x_{m-2},\dots, x_1\},\quad i = 1,\dots,s,
+\end{align}
+trong đó $x_j$ định nghĩa giá trị của biến thứ $j$ trong nghiệm tối ưu riêng phần của trạng thái thứ $i$, tức là:
+\begin{equation*}
+    W1_i = \sum_{j=1}^{m-1}w_jx_j\quad\text{và}\quad P1_j = \sum_{j=1}^{m-1}p_jx_j.
+\end{equation*}
+Vector $W1$ (và do đó, $P1$) được giả sử rằng đã được sắp thứ tự tăng dần nghiêm ngặt.
+
+Thủ tục sử dụng chỉ số $i$ để quet1 các trạng thái của giai đoạn hiện tại và chỉ số $k$ để lưu trữ các trạng thái của giai đoạn mới. Mỗi trạng thái hiện tại có thể tạo ra một trạng thái mới của tổng trọng số $y = W1_{i} + w_m$, nên các trạng thái hiện tại của tổng trọng số $W1_h < y$, và sau đó trạng thái mới được lưu trong giai đoạn mới chỉ khi nào chúng không bị thống trị bởi một trạng thái được lưu trữ. Sau khi thực thi, các giá trị của Biểu thức \eqref{eq:2.34} và \eqref{eq:2.35} được liên quan đến giai đoạn mới, còn các giá trị mới của Biểu thức \eqref{eq:2.36}, \eqref{eq:2.37}, \eqref{eq:2.38} lần lượt được cho bởi $(W2_k), (P2_k)$ và $X2_k$. Các tập hợp $X1_i$ và $X2_k$ được mã hóa thành các chuỗi bit. Các vector $(W2_k)$ và $(P2_k)$ được sắp thứ tự tăng dần nghiêm ngặt. Đầu vào của thủ tục được giả định rằng $W1_0 = P1_0 = X1_0 = 0$.
+
+\begin{algorithm}[H]
+    \scriptsize
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$s, b, (W1_i), (P1_i),(X1_i), w_m, p_m, c$}
+    \KwOutput{$s, b, (W2_k), (P2_k),(X2_k)$}
+    \vspace{1em}
+    $i:=0$\;
+    $k:=0$\;
+    $h:=1$;\;
+    $y:=w_m$\;
+    $W1_{s+1} := +\infty$\;
+    $W2_0 := 0$\;
+    $P2_0 := 0$\;
+    $X2_0 := 0$\;
+    \While{$\min(y, W1_h) \leq c$}
+    {
+        \If{$W1_h \leq y$}
+        {
+            \tcc{Định nghĩa trạng thái kế tiếp $(p, x)$}
+            $p:=P1_h$;
+            $x:=X1_h$\;
+            \If{$W1_h = y$}
+            {
+                \If{$P1_i + p_m > p$}
+                {
+                    $p:= P1_i + p_m$\;
+                    $x:=X1_i + b$\;
+                }
+                $i:=i+1$\;
+                $y:=W1_i + w_m$\;
+            }
+            \tcc{Lưu giữ trạng thái kế tiếp nếu không bị thống trị}
+            \If{$p > P2_k$} 
+            {
+                $k:= k + 1$\;
+                $W2_k :=  W1_h$\;
+                $P2_k:=p$\;
+                $X2_k := x$\;
+            }
+            $h:= h + 1$\;
+        }
+        \Else
+        {
+            \tcc{Lưu giữ trạng thái mới nếu không bị thống trị}
+            \If{$P1_i + p_m > P2_k$} 
+            {
+                $k:=k+1$\;
+                $W2_k := y$\;
+                $P2_k := P1_i + p_m$\;
+                $X2_k := X1_i + b$\;
+            }
+            $i := i + 1$\;
+            $y := W1_i + w_m$\;
+        }
+        $s := k$;
+        $b := 2b$\;
+    }
+    \caption{Thủ tục REC2}
+    \label{algo:rec2}
+\end{algorithm}
+
+Một thuật toán quy hoạch động sử dụng thủ tục REC2 để giải bài toán KP như sau:
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z, (x_j)$}
+    \vspace{1em}
+    $W1_0 := 0$\;
+    $P1_0 := 0$\;
+    $X1_0 := 0$\;
+    $s:=1$\;
+    $b:=2$\;
+    $W1_1 := w_1$\;
+    $P1_1 := p_1$\;
+    $X1_1 := 1$\;
+    \For{$m:=2$ to $n$}
+    {
+        Gọi thủ tục REC2\;
+        Đổi tên lần lượt $W2, P2$ và $X2$ thành $W1, P1$ và $X1$\;
+    }
+    $z := P1_s$\;
+    Xác định $(x_j)$ bằng cách decode $X1_s$\;
+    \caption{Thủ tục DP2}
+    \label{algo:dp2}
+\end{algorithm}
+
+Độ phức tạp thời gian của REC2 là $O(s)$ do $s$ bị chặn bởi $\min(2^{m} -  1, c)$. Do đó, độ phức tạp thời gian của thuật toán DP2 là $O(min(2^{n+1}, nc))$.
+
+Thủ tục DP2 không cần thứ tự cụ thể của các item. Điều này thể hiện tính hiệu quả của nó, tuy nhiên nếu chúng được sắp thứ tự giảm dần theo các tỷ lệ $p_j / w_j$ thì trong trường hợp này, số lượng các trạng thái không bị thống trị bị giảm đi. Do đó, yêu cầu về thứ tự vẫn tiếp tục được giả định.   
+
+\begin{example}
+    \label{example:2.3}
+    Xem xét một thể hiện của KP được định nghĩa như sau:
+    \begin{equation*}
+        \begin{split}
+            n &= 6;\\
+            (p_j) &= (50, 50, 64, 46, 50, 5);\\
+            (w_j) &= (56, 59, 80, 64, 75, 17);\\
+            c & = 190.
+        \end{split}
+    \end{equation*}
+
+\textbf{Các bước thực hiện}
+
+\textbf{Bước 1: Khởi tạo}
+Tập trạng thái ban đầu là:
+\[
+\texttt{states} = \{(0, 0)\}
+\]
+Trong đó, mỗi phần tử là một cặp \((\text{value}, \text{weight})\), nghĩa là giá trị và trọng lượng đều bằng 0.
+
+\textbf{Bước 2: Xét từng vật phẩm}
+
+\textbf{Vật phẩm 1: \( p_1 = 50, w_1 = 56 \)}
+\begin{itemize}
+    \item \textbf{Trạng thái ban đầu:}
+    \[
+    \texttt{states} = \{(0, 0)\}
+    \]
+    \item \textbf{Thêm vật phẩm 1:}
+    \[
+    (0 + 50, 0 + 56) = (50, 56)
+    \]
+    \item \textbf{Trạng thái mới:}
+    \[
+    \texttt{states} = \{(0, 0), (50, 56)\}
+    \]
+    \item \textbf{Khử trạng thái thống trị:} Không có trạng thái nào bị thống trị, giữ nguyên.
+\end{itemize}
+
+\textbf{Vật phẩm 2: \( p_2 = 50, w_2 = 59 \)}
+\begin{itemize}
+    \item \textbf{Trạng thái ban đầu:}
+    \[
+    \texttt{states} = \{(0, 0), (50, 56)\}
+    \]
+    \item \textbf{Thêm vật phẩm 2:}
+    \[
+    (0 + 50, 0 + 59) = (50, 59)
+    \]
+    \[
+    (50 + 50, 56 + 59) = (100, 115)
+    \]
+    \item \textbf{Trạng thái mới:}
+    \[
+    \texttt{states} = \{(0, 0), (50, 56), (50, 59), (100, 115)\}
+    \]
+    \item \textbf{Khử trạng thái thống trị:} Loại bỏ trạng thái $(50, 59)$ do bị thống trị bởi trạng thái $(50, 56)$.
+\end{itemize}
+
+\textbf{Vật phẩm 3: \( p_3 = 64, w_3 = 80 \)}
+\begin{itemize}
+    \item \textbf{Trạng thái ban đầu:}
+    \[
+    \texttt{states} = \{(0, 0), (50, 56), (100, 115)\}
+    \]
+    \item \textbf{Thêm vật phẩm 3:}
+    \[
+    (0 + 64, 0 + 80) = (64, 80)
+    \]
+    \[
+    (50 + 64, 56 + 80) = (114, 136)
+    \]
+    \[
+    (100 + 64, 115 + 80) = (164, 195) \quad \text{(loại bỏ vì vượt quá sức chứa)}
+    \]
+    \item \textbf{Trạng thái mới:}
+    \[
+    \texttt{states} = \{(0, 0), (50, 56), (64, 80), (100, 115), (114, 136)\}
+    \]
+    \item \textbf{Khử trạng thái thống trị:} Không có trạng thái nào bị thống trị, giữ nguyên.
+\end{itemize}
+
+\textbf{Vật phẩm 4: \( p_4 = 46, w_4 = 64 \)}
+\begin{itemize}
+    \item \textbf{Trạng thái ban đầu:}
+    \[
+    \texttt{states} = \{(0, 0), (50, 56), (64, 80), (100, 115), (114, 136)\}
+    \]
+    \item \textbf{Thêm vật phẩm 4:}
+    \[
+    (0 + 46, 0 + 64) = (46, 64)
+    \]
+    \[
+    (50 + 46, 56 + 64) = (96, 120)
+    \]
+    \[
+    (64 + 46, 80 + 64) = (110, 144)
+    \]
+    \[
+    (100 + 46, 115 + 64) = (146, 179)
+    \]
+     \[
+    (114 + 46, 136 + 64) = (160, 200) \quad \text{loại vì quá sức chứa}
+    \]
+    \item \textbf{Trạng thái mới:}
+    \begin{align*}
+        \texttt{states} = \{(0, 0), (50, 56), (64, 80), \\ (100, 115), (114, 136),
+        (46, 64), \\ (96, 120), (110, 144), (146, 179)
+        \}
+    \end{align*}
+    \item \textbf{Khử trạng thái thống trị:} Loại bỏ \( (46, 64) \) do bị thống trị bởi \( (50, 56) \); $(110, 144)$ do bị thống trị bởi $(114, 136)$; $(96, 120)$ do bị thống trị bởi $(100, 115)$
+\end{itemize}
+
+\textbf{Vật phẩm 5: \( p_5 = 50, w_5 = 75 \)}
+\begin{itemize}
+    \item \textbf{Trạng thái ban đầu:}
+    \begin{align*}
+        \texttt{states} =  \{(0, 0), (50, 56), (64, 80), (100, 115) \\,
+                        (114, 136),(146, 179)
+             \}
+    \end{align*}
+    \item \textbf{Thêm vật phẩm 5:}
+    \[
+    (0 + 50, 0 + 75) = (50, 75)
+    \]
+    \[
+    (50 + 50, 56 + 75) = (100, 131)
+    \]
+    \[
+    (64 + 50, 80 + 75) = (114, 155)
+    \]
+    \[
+    (100 + 50, 115 + 75) = (150, 190) \quad \text{(vừa đúng sức chứa)}
+    \]
+    \[
+    (114 + 50, 136 + 75) = (164, 211) \quad \text{loại vì quá sức chứa}
+    \]
+    \[
+    (146 + 50, 179 + 75) = (196, 254) \quad \text{loại vì quá sức chứa}
+    \]
+    \item \textbf{Trạng thái mới:}
+    \begin{align*}
+        \texttt{states} = \{(0, 0), (50, 56), (64, 80), \\ (100, 115),
+                        (114, 136),(146, 179), \\ (50, 75), (100, 131),
+                        (114, 155), \\ (150, 190)
+             \}
+    \end{align*}
+    \item \textbf{Khử trạng thái thống trị:} Loại bỏ \( (50, 75) \), \( (50, 56) \), và \( (100, 131) \) do bị thống trị bởi \( (100, 115) \), và \( (114, 155) \) do bị thống trị bởi \( (114, 136) \).
+\end{itemize}
+
+\textbf{Vật phẩm 6: \( p_6 = 5, w_6 = 17 \)}
+\begin{itemize}
+    \item \textbf{Trạng thái ban đầu:}
+    \[
+    \texttt{states} = \{(0, 0), (50, 56), (64, 80), (100, 115),
+                        (114, 136),(146, 179),(150, 190)
+             \}
+    \]
+    \item \textbf{Thêm vật phẩm 6:}
+    \[
+    (0 + 5, 0 + 17) = (5, 17)
+    \]
+    \[
+    (50 + 5, 56 + 17) = (55, 73)
+    \]
+    \[
+    (64 + 5, 80 + 17) = (69, 97)
+    \]
+    \[
+    (100 + 5, 115 + 17) = (105, 132)
+    \]
+    \[
+    (114 + 5, 136 + 17) = (119, 143)
+    \]
+    \[
+    (146 + 5, 179 + 17) = (151, 196) \quad \text{loại vì vượt sức chứa}
+    \]
+    \[
+    (150 + 5, 190 + 17) = (155, 207) \quad \text{loại vì vượt sức chứa}
+    \]
+    \item \textbf{Trạng thái mới:}
+    \begin{align*}
+        \texttt{states} = \{
+        (0, 0), (50, 56), (64, 80), \\
+        (100, 115), (114, 136),(146, 179),\\
+        (150, 190), (5,17), (55, 73),\\
+        (69, 97), (105, 132), (119, 143)
+    \}
+    \end{align*}
+    \item \textbf{Khử trạng thái thống trị:} Không có trạng thái nào bị thống trị.
+\end{itemize}
+
+\textbf{Bước 3: Kết quả}
+Giá trị lớn nhất có thể đạt được là: 150, tương ứng với nghiệm $x = (1, 1, 0, 0, 1, 0)$.
+\end{example}
+
+\subsection{Thuật toán Horowitz-Sahni}
+
+Horowitz và Sahni (1974) đã trình bày một thuật toán dựa trên sự phân chia nhỏ thứ phân (subdivision) của bài toán gốc gồm $n$ biến thành hai bài toán con lần lượt là $q = \left \lceil n / 2\right \rceil$ và $r = n - q$. Với mỗi bài toán con, một danh sách chứa tất cả các trạng thái không bị thống trị liên quan đến trạng thái cuối cùng được tính toán; sau đó hai danh sách được kết hợp để mà tìm kiếm một nghiệm tối ưu.
+
+Đặc trưng cốt lỗi của thuật toán trong trường hợp xấu nhất là chỉ cần hai danh sách $2^q - 1$ cho mỗi trạng thái thay vì một danh sách đơn gồm $2^n - 1$ trạng thái. Do đó mà độ phức tạp thời gian và không gian giảm xuống $O(min(2^{n/2}, nc))$ với sự cải thiện căn bậc hai trong hầu hết các trường hợp. Trong nhiều trường hợp, số lượng các trạng thái bị thống trị nhỏ hơn nhiều so với $2^{n/2}$ bởi vì
+\begin{enumerate}[label=(\alph*)]
+    \item Nhiều trạng thái bị thống trị
+    \item Và với $n$ đủ lớn, ta có $c \ll 2^{n/2}$.
+\end{enumerate}
+
+Ahrens và Finke (1975) đã đề xuất một thuật toán mà kết hợp kỹ thuật của Horowitz và Sahni (1974) với một thủ tục nhánh cận để tiết kiệm chi phí lưu trữ hơn nữa. Thuật toán hoạt động rất tốt với các bài toán khó mà có $n$ giá trị thấp và các $w_i$ và $c$ có giá trị rất cao. Tuy nhiên, nhược điểm về độ phức tạp tính toán luôn luôn tồn tại trong các thủ tục nhánh cận cho dù chi phí lưu trữ không đáng kể đi nữa. 
+
+\begin{example}
+Vẫn xét đầu vào như sau:
+\[
+    \begin{split}
+        n &= 6;\\
+        (p_j) &= (50, 50, 64, 46, 50, 5);\\
+        (w_j) &= (56, 59, 80, 64, 75, 17);\\
+        c & = 190.
+    \end{split}
+\]
+
+Ở đây, ta tính được $q=3$. Do đó ta có 2 tập con như sau:
+
+
+\[
+\{(p_1, w_1), (p_2, w_2), (p_3, w_3)\} = \{
+    (50, 56), (50, 59), (64, 80)
+\}
+\]
+
+và
+\[
+\{(p_4, w_4), (p_5, w_5), (p_6, w_6)\} = \{
+    (46, 64), (50, 75), (5, 17)
+\}
+\]
+\textbf{Áp dụng thuật toán DP2 cho tập đầu}
+
+Các bước trình bày chi tiết, xem lại ví dụ 8, ta thu được các trạng thái cuối cùng sẽ là:
+\[
+\textbf{states} = \{
+    (0,0),(50,56),(64,80),(100,115),(114,136)
+\}
+\]
+
+\textbf{Áp dụng thuật toán DP2 cho tập cuối}
+Các bước trình bày chi tiết, xem lại ví dụ 8, ta thu được các trạng thái cuối cùng sẽ là:
+\[
+\textbf{states} = \{
+    (0,0),(5,17),(46,64),(50,75),(51,81),(55,92),(96,139),(101,156)
+\}
+\]
+
+\textbf{Kết hợp hai trạng thái}
+Ta thu được tổ hợp như sau:
+\begin{align*}
+    \textbf{states} = \{
+    (0,0),(5,17),(46,64),(50,75),\\
+    (51,81),(55,92),(96,139),(101,156),\\
+    (50,56),(55,73),(96,120),(100,131),\\
+    (101,137),(105,148),(64,80),(69,97),\\
+    (110,144),(114,155),(115,161),(119,172),\\
+    (100,115),(105,132),(146,179),(150,190),\\
+    (114,136),(119,153)
+\}
+\end{align*}
+
+Chọn kết quả tốt nhất trong các states là: $(150, 190)$.
+\end{example}
+
+
+\subsection{Thuật toán Toth}
+
+Vào năm 1980, Toth đã trình bày một thuật toán quy hoạch động dựa trên 
+\begin{enumerate}[label=(\alph*)]
+    \item Sự khử của các trạng thái không cần thiết
+    \item Và một phép kết hợp của các thủ tục REC1 và REC2.
+\end{enumerate}
+
+Nhiều trạng thái được tính toán bởi các thủ tục REC1 hay REC2 không thật sự cần thiết cho các giai đoạn phía sau đó bởi vì ta chỉ cần quan tâm đến các trạng thái có khả năng sinh ra nghiệm tối ưu trong giai đoạn cuối cùng. Các trạng thái không cần thiết được sinh ra bởi thủ tục REC1 có thể khử đi nhờ một luật như sau:
+
+Nếu một trạng thái được định nghĩa bởi giai đoạn thứ $m$ có một tổng trọng số $W$ thỏa mãn một trong các điều kiện sau:
+\begin{align*}
+    &(i)\quad W < c - \sum_{j=m+1}^nw_j,\\
+    &(ii)\quad c - \min_{m < j \leq n}\{w_j\} < W < c,
+\end{align*}
+thì trạng thái sẽ không bao giờ sinh ra được $P_c$ và do đó có thể được khử đi.
+
+Một luật tương tự có thể được đưa ra cho thủ tục REC2. Trong trường này, nó cần giữ lại các trạng thái với trọng số lớn nất thỏa mãn (i), và trạng thái cuối cùng tức là trạng thái $s$. Luật không thể được mở rộng cho thuật toán Horowitz-Sahni bởi vì để kết hợp hai danh sách, tất cả các trạng thái không bị thống trị liên quan đến hai bài toán con phải được biết.
+
+\begin{example}
+    Các trạng thái được sinhra bởi thủ tục DP2 với REC2 được cải thiện thông qua luật khử như sau:
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{ccccccccccccc}
+        \toprule
+        \multirow{2}{*}{$i$} & \multicolumn{2}{c}{$m=1$} & \multicolumn{2}{c}{$m=2$} & \multicolumn{2}{c}{$m=3$} & \multicolumn{2}{c}{$m=4$} & \multicolumn{2}{c}{$m=5$} & \multicolumn{2}{c}{$m=6$} \\ \cmidrule{2-13} 
+                             & $W_i$    & $P_i$    & $W_i$    & $P_i$    & $W_i$    & $P_i$    & $W_i$    & $P_i$    & $W_i$    & $P_i$    & $W_i$    & $P_i$    \\ \midrule
+        0                    & 0        & 0        & 0        & 0        & 0        & 0        & 0        & 0        & 0        & 0        & 0        & 0        \\ 
+        1                    & 56       & 50       & 56       & 50       & 56       & 50       & 80       & 64       & 136      & 114      & 190      & 150      \\ 
+        2                    &       &       & 115      & 100      & 80       & 64       & 115      & 100      & 190      & 150      &  &      \\ 
+        3                    &       &       &       &       & 115      & 100      & 136      & 114      &           &          &           &          \\ 
+        4                    &       &      &       &       & 136      & 114      & 179      & 146      &           &          &           &          \\ \bottomrule
+        \end{tabular}
+    \end{table}
+\end{example}
+
+Nhìn chung, thuật toán DP2 có tính hiệu quả hơn thuật toán DP1 bởi vì số trạng thái được sinh ra ít hơn. Để ý rằng, với việc tính toán của một trạng thái đơn, độ phức tạp thời gian và không gian cần của thuật toán DP2 cao hơn so với DP1. Thế nên, với các bài toán khó mà trong đó có rất ít các trạng thái bị thống trị và cả hai thuật toán đều sinh ra các danh sách hầu như giống nhau, thì thuật toán DP1 được cân nhắc lựa chọn hơn so với DP2. Một thuật toán quy hoạch động mà giải quyết được cả hai thể loại bài toán dù dễ hay khó có thể tạo ra được nhờ kết hợp các đặc trưng tốt của hai hướng tiếp cận. Bằng cách sử dụng thủ tục REC2 miễn là số lượng các trạng thái được sinh ra là thấp và sau đó cho vào thủ tục REC1. 
+% Một luật heuristic đơn giản để quyết định các  bước 
+
+\section{Nhận xét}
+
+Tóm lại, cả thuật toán knapsack tham lam và knapsack 0/1 đều có sự đánh đổi khác nhau giữa tính tối ưu và hiệu quả. Các giải pháp nhanh có thể đến từ knapsack tham lam nhưng các giải pháp như vậy không tối ưu trong một số trường hợp trong khi knapsack 0/1 đảm bảo điều đó với cái giá phải trả là độ phức tạp tính toán cao. Sự hiểu biết này sẽ hình thành cơ sở để lựa chọn thuật toán phù hợp cho một bài toán knapsack nhất định. Sau đây là sự so sánh giữa hai thuật toán này:
+
+\begin{table}[!ht]
+\centering
+\caption{So sánh giữa thuật toán tham lam và Quy hoạch động}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Tiêu chuẩn}         & \textbf{Greedy}                                               & \textbf{Quy hoạch động}                                                                                   \\ \hline
+\textbf{Hướng tiếp cận}           & Chiến lược tham lam, lựa chọn tối ưu cục bộ                           & Lập trình động, xem xét tất cả các tùy chọn                                                           \\ \hline
+\textbf{Cơ sở}   & Dựa trên tỷ lệ giá trị trên trọng lượng                              & Xem xét tất cả các kết hợp có thể                                                                     \\ \hline
+\textbf{Độ phức tạp}         & O(n log n) đã sắp xếp                                                & O(nW) – Trong đó n là số lượng mục, W là dung lượng                                                   \\ \hline
+\textbf{Lời giải tối ưu}    & Không phải lúc nào cũng tối ưu                                       & Luôn luôn tối ưu                                                                                      \\ \hline
+\textbf{Đối tượng}         & Phù hợp cho bài toán CKP                               & Phù hợp bài toán 0/1 KP \\
+\textbf{Sử dụng bộ nhớ}      & Yêu cầu ít bộ nhớ hơn                                               & Yêu cầu nhiều bộ nhớ hơn do bảng DP                                                                   \\ \hline
+\textbf{Loại thuật toán}     & Tham    lam                                                           & Lập trình động                                                                                        \\ \hline
+\textbf{Sắp xếp}             & Yêu cầu sắp xếp dựa trên các tiêu chí nhất định                     & Không cần sắp xếp                                                                                     \\ \hline
+\textbf{Tốc độ}              & Nhanh hơn do lựa chọn tham lam                                      & Chậm hơn do tìm kiếm đầy đủ                                                                           \\ \hline
+\textbf{Trường hợp sử dụng}  & Xấp xỉ nhanh, tập dữ liệu lớn                                       & Dữ liệu nhỏ, đảm bảo tính tối ưu                                                                      \\ \hline
+\end{tabular}%
+}
+\end{table}
+

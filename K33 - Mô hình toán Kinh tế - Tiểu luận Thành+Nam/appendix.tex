@@ -1,0 +1,1053 @@
+\appendix
+
+\chapter*{PHỤ LỤC 1: MỘT SỐ THUẬT TOÁN KHÁC CHO BÀI TOÁN KNAPSACK}
+\addcontentsline{toc}{chapter}{{\bf PHỤ LỤC 1: MỘT SỐ THUẬT TOÁN KHÁC CHO BÀI TOÁN KNAPSACK}}
+
+\section{Thuật toán nhánh cận}
+
+Giả định rằng các phần tử được sắp xếp theo như Biểu thức \eqref{eq:2.7}. Một bước di chuyển tiến (forward move) là thực hiện thêm một tập lớn nhất có thể các phần tử mới liên tục vào nghiệm hiện hành. Va một bước di chuyển quay lui (backtracking move) là thực hiện loại bỏ phần tử được thêm vào cuối cùng từ nghiệm hiện hành. Bất cứ khi nào mà phép di chuyển tiến không thể thực hiện, chặn trên $U_1$ tương ứng với nghiệm hiện hành được tính toán và so sánh với nghiệm tốt nhất có thể có để mà kiểm rằng liệu phép tiến này có dẫn tới được nghiệm tốt hơn không. Nếu thật sự như vậy, một phép di chuyển tiến mới được thực thi, và nếu không thì một phép quay lui sẽ được thực thi. Khi phần tử cuối cùng được xem xét, nghiệm hiện hành hoàn chỉnh và hoàn toàn khả thi để cập nhật nghiệm tốt nhất. Thuật toán dừng khi không thể quay lui được nữa.
+
+Ta định nghĩa một số ký hiệu như sau:
+\begin{align*}
+    (\hat{x}_j) &= \text{nghiệm hiện hành};\\
+    \hat{z} &= \sum_{j=1}^np_j\hat{x}_j =\text{giá trị nghiệm hiện hành};\\
+    \hat{c} &= c - \sum_{j=1}^nw_j\hat{x}_j =\text{lượng phần dư hiện hành};\\
+    (x_j) &= \text{nghiệm tốt nhất hiện có};\\
+    z &=\sum_{j=1}^np_j{x}_j =\text{giá trị nghiệm tốt nhất hiện có};
+\end{align*}
+
+\subsection{Thuật toán Horowitz-Sahni}
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{0.5em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z, (x_j)$}
+    \vspace{0.5em}
+
+    \SetKwFunction{F_init}{Khởi tạo}
+    \SetKwFunction{F_compute_upperbound}{Tính chặn trên $U_1$}
+    \SetKwFunction{F_forward}{Thực hiện một bước tiến}
+    \SetKwFunction{F_update}{Cập nhật nghiệm tốt nhất}
+    \SetKwFunction{F_backtrack}{Quay lui}
+
+    \SetKwProg{Fn}{Bước 1. [Khởi tạo]}{:}{}
+    \Fn{}{
+        $z := 0$;
+        $\hat{z} := 0$;
+        $\hat{c} := c$;\\
+        $p_{n+1} := 0$;
+        $w_{n+1} := +\infty$;
+        $j:=1$;\\
+    }
+    \SetKwProg{Fn}{Bước 2. [Tính chặn trên $U_1$]}{:}{}
+    \Fn{}{
+        tìm \begin{equation*}
+            r = \min\{i: \sum_{k=j}^iw_k > \hat{c}\}
+        \end{equation*}\\
+        gán:\begin{equation*}
+            u:= \sum_{k=j}^{r-1}p_k + \left \lfloor (\hat{c} - \sum_{k = j}^{r-1})p_r / w_r\right \rfloor
+        \end{equation*}
+        \\
+        \If{$z \geq \hat{z} + u$}
+        {
+        chuyển tới Bước 5.
+        }
+    }
+    \SetKwProg{Fn}{Bước 3. [Thực hiện một bước tiến]}{:}{}
+    \Fn{}{
+        \While{$w_j \leq \hat{c}$}
+        {
+            $\hat{c} := \hat{c} - w_j$;
+            $\hat{z} := \hat{z} + p_j$;\\
+            $\hat{x}_j := 1$;
+            $j := j + 1$;
+        }
+        \If{$j \leq n$}
+        {
+            $\hat{x}_j := 0$;
+            $j := j + 1$;\\
+        }
+        \If{$j < n$}
+        {
+            chuyển đến Bước 2;
+        }
+        \If{$j = n$}
+        {
+            chuyển đến Bước 3;
+        }
+    }
+    \caption{Thủ tục Horowitz-Sahni (Phần 1)}
+    \label{algo:hs_part1}
+\end{algorithm}
+
+\begin{algorithm}[!ht]
+    \SetKwProg{Fn}{Bước 4. [Cập nhật nghiệm tốt nhất]}{:}{}
+    \Fn{}{
+        \If{$\hat{z} > z$}
+        {
+            $z := \hat{z}$;\\
+            \For{$k:=1$ to $n$}
+            {
+                $x_k := \hat{x}_k$;
+            }
+        }
+        $j:=n$;\\
+        \If{$\hat{x}_n =  1$}
+        {
+            $\hat{c} := \hat{c} + w_n$;\\
+            $\hat{z} := \hat{z} - p_n$;\\
+            $\hat{x}_n := 0$
+        }
+    }
+    \SetKwProg{Fn}{Bước 5. [Quay lui]}{:}{}
+    \Fn{}{
+        tìm
+        \begin{equation}
+            i = \max\{k < j: \hat{x}_k = 1\};
+        \end{equation}\\
+        \If{không tồn tại chỉ số $i$ như thế}
+        {
+            Kết thúc thuật toán;
+        }
+        $\hat{c} := \hat{c} + w_j$;\\
+        $\hat{z} := \hat{z} - p_j$;\\
+        $\hat{x}_i := 0$\\
+        $j := j + 1$;\\
+        chuyển đến Bước 2
+    }
+    \caption{Thủ tục Horowitz-Sahni (Phần 2)}
+    \label{algo:hs_part2}
+\end{algorithm}
+
+\begin{example}
+    Xem xét một thể hiện của bài toán KP được định nghĩa bởi 
+    \begin{align*}
+        n &= 7;\\
+        (p_j) &= (70, 20, 39, 37, 7, 5, 10);\\
+        (w_j) &= (31, 10, 20, 19, 4, 3, 6);\\
+        c &= 50.
+    \end{align*}
+\end{example}
+
+Thuật toán Martello-Toth chi tiết thông qua mã giả ở các Thủ tục \ref{algo:hs_part1} và \ref{algo:hs_part2}.
+
+\subsection{Thuật toán Martello-Toth}
+
+Sự khác nhau giữa thuật toán Martello-Toth so với thuật toán Horowitz-Sahni có thể được tóm tắt như sau:
+\begin{enumerate}[label=(\roman*)]
+    \item Thay vì sử dụng chặn $U_1$, thì chặn $U_2$ được sử dụng.
+    \item  Phép di chuyển tiến gắn với việc lựa chọn item $j$ được phân tách thành hai pha: \emph{xây dựng một nghiệm hiện hành mới} và \emph{lưu trữ nghiệm hiện hành}. Trong pha đầu tiên, tập hợp lớn nhất $N_j$ được định nghĩa bằng cách thêm các item liên tiếp nhau vào nghiệm hiện hành bắt đầu từ vị trí thứ $j$, và chặn trên tương ứng với việc thêm phần tử thứ $j$ được tính toán. Nếu chặn này nhỏ hơn hoặc bằng giá trị nghiệm tốt nhất hiện có, thì một pha di chuyển quay lui sẽ được gọi thực hiện. Nếu nó lớn hơn, thì pha thứ hai được gọi thực hiện. Trong pha này, việc thêm các item của tập $N_j$ vào nghiệm hiện hành được thực hiện chỉ khi giá trị của một nghiệm mới không biểu diễn giá trị cực đại mà có thể thu được khi thêm item thứ $j$. Ngược lại, nghiệm tốt nhất hiện có bị thay đổi, nhưng nghiệm hiện hành không cần cập nhật và không cần quay lui.
+    \item Một thủ tục tiến cụ thể dựa trên tiêu chí thống trị được thực thi bất cứ lúc nào trước khi một pha di chuyển quay lui dựa trên item thứ $i$, lượng phần dư $\hat{c}$ không cho phép thêm vào nghiệm hiện hành của bất kỳ item nào dựa trên item thứ $i$. Thủ tục dựa trên nhận xét sau: nghiệm hiện này có thể được cải thiện chỉ khi item thứ $i$ bị thay thế bởi một item có lợi ích lớn hơn và có một trọng số đủ nhỏ để mà cho phép nó được thêm vào hoặc bởi ít nhất hai item có trọng số toàn cục không lớn hơn $w_i + \hat{c}$. Thông qua tiếp cận này, tổng quát, ta hoàn toàn có thể khử hầu hết các nút không hữu ích mà được phát sinh tại các mức thấp nhất của cây quyết định. 
+    \item Các chặn trên gắn với các nút của cây quyết định được tính toán thông qua một kỹ thuật tham số hóa dựa trên việc lưu trữ thông tin liên quan tới nghiệm hiện hành. Thật vậy, giả sử rằng nghiệm hiện xây được dựng bằng cách thêm tất cả các item từ vị trí thứ $j$ đến thứ $r$, thì khi thực hiện một pha quy lui trên một trong các item này (ta đặt là item thứ $i$, $j \leq < r$), nếu không có phép chèn nào xuất hiện cho các item trước $j$, thì nó hoàn toàn khả thi để chèn ít nhất các item $i+1, \dots, r$ vào nghiệm hiện hành. Để kết thúc thủ tục, ta lưu trữ $\bar{r}_i$, $\bar{p}_i$ và $\bar{w}_i$ định lượng $r + 1$, $\sum_{k = i}^rp_k$ và $\sum_{k=i}^rw_k$ tương ứng với $i = j,\dots, r$ và trong $\widetilde{r}$ giá trị $r - 1$ được sử dụng để cho các cập nhật phía sau.
+\end{enumerate}
+
+Mô tả chi tiết cho thuật toán được thể hiện trong Thủ tục \ref{algo:mt1_part1},\ref{algo:mt1_part2},\ref{algo:mt1_part3} và \ref{algo:mt1_part4}.
+
+\scalebox{0.95}{
+    \centering
+    \begin{algorithm}[H]
+    \normalsize
+    \DontPrintSemicolon
+    % \vspace{0.5em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z, (x_j)$}
+    % \vspace{0.5em}
+    \SetKwProg{Fn}{Bước 1. [Khởi tạo]}{:}{}
+    \Fn{}{
+        $z := 0$;
+        $\hat{z} := 0$;
+        $\hat{c} := c$;
+        $p_{n+1} := 0$;
+        $w_{n+1} := +\infty$;\\
+        \For{$k:=1$ to $n$}
+        {
+            $\hat{x}_k := 0$\;
+        }
+        Tính toán chặn trên $U = U_2$ trên giá trị nghiệm tối ưu\;
+        $\bar{w}_1 :=0$;
+        $\bar{p}_1 := 0$;
+        $\bar{r}_1 := 0$;
+        $\bar{r} := 0$\\
+        \For{$k:=n$ to 1 step -1}
+        {
+            Tính $m_k := \min\{w_i : i > k\}$\;
+        }
+        $j:=1$;\\
+    }
+    \SetKwProg{Fn}{Bước 2. [Xây dựng một nghiệm mới hiện hành]}{:}{}
+    \Fn{}{
+        \While{$w_n > \hat{c}$}
+        {
+            \If{$z \geq \hat{z} + \left \lfloor \hat{c}p_{j+1} / w_{j+1}\right \rfloor$}
+            {
+                Chuyển đến Bước 5\;
+            }
+            \Else
+            {
+                $j := j + 1$\;
+            }
+            Tìm kiếm $r = \min\{i: \bar{w}_j + \sum_{k = \bar{r}_j}^iw_k > \hat{c}\}$\;
+            $p' := \bar{p}_j + \sum_{k = \bar{r}_j}^{r-1}p_k$;
+            $w' := \bar{w}_j + \sum_{k = \bar{r}_j}^{r-1}w_k$\;
+            \If{$r \leq n$}
+            {
+                $u:= \max(\left \lfloor (\hat{c} - w')p_{r+1}/w_{r+1}\right \rfloor, \left \lfloor p_r - (w_r-(\hat{c} - w'))p_{r-1}/w_{r-1}\right \rfloor)$
+            }
+            \Else
+            {
+                $u:=0$\;
+            }
+            \If{$z \geq \hat{z} + p' + u$}
+            {
+                Chuyển đến Bước 5\;
+            }
+            \If{$u = 0$}
+            {
+                Chuyển đến Bước 4\;
+            }
+        }
+    }
+    \caption{Thủ tục MT1 (Phần 1)}
+    \label{algo:mt1_part1}
+\end{algorithm}}
+
+\begin{algorithm}[H]
+    \SetKwProg{Fn}{Bước 3. [Lưu giữ nghiệm mới hiện hành]}{:}{}
+    \Fn{}{
+        $\hat{c} := \hat{c} - w'$;
+        $\hat{z} := \hat{z} + p'$\;
+        \For{$k:=j$ to $r - 1$}
+        {
+            $\hat{x}_k := 1$\;
+        }
+        $\bar{w}_j := w'$;
+        $\bar{p}_j := p'$;
+        $\bar{r}_j := r'$\;
+        \For{$k:=j + 1$ to $r - 1$}
+        {
+            $\bar{w}_k := \bar{w}_{k-1} - w_{k-1}$;
+            $\bar{p}_k := \bar{p}_{k-1} - p_{k-1}$\;
+            $\bar{r}_k := r$;
+        }
+        \For{$k:=r$ to $\bar{r}$}
+        {
+            $\bar{w}_k := 0$;
+            $\bar{p}_k := 0$;
+            $\bar{r}_k := 0$\;
+        }
+        $\bar{r} := r - 1$;
+        $j:=r+1$\;
+        \If{$\hat{c} \geq m_{j-1}$}
+        {
+            Chuyển đến Bước 2\;
+        }
+        \If{$z \geq \hat{z}$}
+        {
+            Chuyển đến Bước 5\;
+        }
+        $p':=0$\;
+    }
+    \SetKwProg{Fn}{Bước 4. [Cập nhật nghiệm tốt nhất]}{:}{}
+    \Fn{}{
+        $z := \hat{z} + p'$\;
+        \For{$k:=1$ to $j-1$}
+        {
+            $x_k := \hat{x}_k$\;
+        }
+        \For{$k:=j$ to $r-1$}
+        {
+            $x_k := 1$\;
+        }
+        \For{$k:=r$ to $n$}
+        {
+            $x_k := 0$\;
+        }
+        \If{$z = U$}
+        {
+            Kết thúc thủ tục\;
+        }
+    }
+    \caption{Thủ tục MT1 (Phần 2)}
+    \label{algo:mt1_part2}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \SetKwProg{Fn}{Bước 5. [Quy lui]}{:}{}
+    \Fn{}{
+        Tìm kiếm $i = \max\{k< j: \hat{x}_k = 1\}$\;
+        \If{không tìm được $i$}
+        {
+            Kết thúc thủ tục\;
+        }
+        $\hat{c} := \hat{c} + w_i$\;
+        $\hat{z} := \hat{z} - p_i$\;
+        $\hat{x}_i := 0$\;
+        $j := i + 1$\;
+        \If{$\hat{c} - w_i \geq m_i$}
+        {
+            Chuyển đến Bước 2\;
+        }
+        $j:=i$\;
+        $h:=i$\;
+    }
+    \caption{Thủ tục MT1 (Phần 3)}
+    \label{algo:mt1_part3}
+\end{algorithm}
+
+\scalebox{0.95}{\begin{algorithm}[H]
+    \SetKwProg{Fn}{Bước 6. [Thử thay thế item $i$ bằng item $h$]}{:}{}
+    \Fn{}{
+        $h:=h+1$\;
+        \If{$z \geq \hat{z}$}
+        {
+            Chuyển tới Bước 5;
+        }
+        \If{$w_h = w_i$}
+        {
+            Chuyển tới Bước 6\;
+        }
+        \If{$w_ > w_i$}
+        {
+            \If{$w_h \geq \hat{c}$ hoặc $z \geq \hat{z} + p_h$}
+            {
+                Chuyển tới Bước 6\;
+            }
+            $z:=\hat{z}+ p_h$\;
+            \For{$k:=1$ to $n$}
+            {
+                $x_k := \hat{x}_k$\;
+            }
+            $x_h:=1$\;
+            \If{$z = U$}
+            {
+                Kết thúc thủ tục\;
+            }
+            $i:=h$\;
+            Chuyển đến bước 6\;
+        }
+        \Else
+        {
+            \If{$\hat{c} - w_h \leq m_h$}
+            {
+                Chuyển đến bước 6\;
+            }
+            $\hat{c} := \hat{c} - w_h$;
+            $\hat{z} := \hat{z} + p_h$;
+            $\hat{x}_h := 1$\;
+            $j:=h+1$\;
+            $\bar{w_h}:=w_h$;
+            $\bar{p}_h := p_h$;
+            $\bar{r}_r := h+1$\;
+            \For{$k:=h+1$ to $\bar{r}$}
+            {
+                $\bar{w_k}:=0$;
+                $\bar{p_k}:=0$;
+                $\bar{r_k}:=k$;
+            }
+            $\bar{r} :=h$\;
+            Chuyển tới bước 2\;
+        }
+    }
+    \caption{Thủ tục MT1 (Phần 4)}
+    \label{algo:mt1_part4}
+\end{algorithm}}
+
+% \begin{example}
+    
+% \end{example}
+
+Ngày nay, các thuật toán nhánh cận là cách phổ biến nhất để tìm nghiệm tối ưu cho bài toán ba-lô một cách hiệu quả. Các kỹ thuật gần đây nhúng vào quá trình nhánh cận vào trong một khung thuật toán cụ thể để giải quyết khi số lượng thể hiện của bài toán tăng lên.  
+
+
+\section{Thuật toán rút gọn}
+
+Kích thước của một thể hiện của bài toán KP có thể được giảm đi bằng cách áp dụng một thủ tục để cố định giá trị tối ưu của nhiều biến nhất có thể. Các thủ tục này phân hoạch tập hợp $N = \{1, 2, \dots, n\}$ thành ba tập con:
+\begin{align*}
+    J1 &= \{j \in N: x_j = 1 \text{ trong nghiệm tối ưu của bài toán KP}\},\\
+    J0 &= \{j \in N: x_j = 0 \text{ trong nghiệm tối ưu của bài toán KP}\},\\
+    F &= N \ (J1 \cup J0).
+\end{align*}
+Bài toán gốc KP có thể được biến đổi thành dạng tinh giản như sau:
+\begin{align*}
+    \text{maximize}\quad z &= \sum_{j \in F}w_jx_j + \hat{p}\\
+    \text{subject to}\quad &\sum_{j \in F}w_jx_j \leq \hat{c}\\
+    & x_j = 0 \text{ or } 1,\quad j \in F, 
+\end{align*}
+trong đó $\hat{p} = \sum_{j \in J1}p_j, \hat{c} = c - \sum_{j \in J1}w_j$.
+
+Ingargiola và Korsh (1973) đã đề xuất một phương pháp đầu tiên để xác định $J1$ và $J0$. Ý tưởng cơ bản như sau: nếu thiết lập một biến $x_j$ của một giá trị cho trước $b$ ($b = 0$ hoặc $b = 1$) sinh ra một nghiệm tệ hơn nghiệm đã có trước đó, thì $x_j$ phải nhận giá trị $1 - b$ trong bất kỳ nghiệm tối ưu nào. Gọi $l$ là giá trị của nghiệm khả thi của bài toán KP, và với $j \in N$, đặt $u^1_j$ (tương ứng với $u_j^0$
+
+Trong thuật toán Ingargiola-Korsh, $u_j^1$ và $u_j^0$ được tính toán bằng cách sử dụng chặn Dantzig. Gọi $s$ là phần tử chủ chốt và $U_1$ là chặn Dantzig cho bài toán gốc. Thì $u_j^1 = U_1$ với bất kỳ $j < s$ và $u_j^0 = U_1$ với bất kỳ $j > s$. Do đó giá trị $j > s$ (tương ứng với $j < s$) không cần phải xem xét trong việc quyết định $J1$ (tương ứng với $J0$), bởi vì $U_1 \geq l$. Thuật toán khởi tạo $l$ từ $\sum_{j = 1}^{s - 1}p_j$ và cải thiện nó trong quá trình thực thi. Ta giả định rằng các item được sắp thứ tự theo Biểu thức \eqref{eq:2.7}. Lưu ý rằng, $\sigma^1(j)$ và $\sigma^0(j)$ lần lượt biểu diễn phần tử chủ chố khi nó được thêm vào tương ứng với $x_j = 1$ và $x_j = 0$ (xem Biểu thức \eqref{eq:2.17} và \eqref{eq:2.18}).
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$J1, J0$}
+    \vspace{1em}
+    $J1 := \varnothing$\;
+    $J0 := \varnothing$\;
+    Xác định 
+    \begin{equation}
+        s = \min\{j : \sum_{i=1}^jw_i > c\}
+    \end{equation}\;
+    $l:=\sum_{j = 1}^{s - 1}p_j$\;
+    \For{$j:=1$ tp $s$}
+    {
+        Xác định $\sigma^0(j)$ và tính $u^0_j$\;
+        Tính:
+        \begin{equation*}
+            l:=\max\left(l, \sum_{i=1, i \ne j}^{\sigma^0(j) - 1}p_i\right)
+        \end{equation*}\;
+        \If{$u_j^0 < l$}
+        {
+            $J1 := J1 \cup \{j\}$
+        }
+    }
+    \For{$j:=s$ tp $n$}
+    {
+        Xác định $\sigma^1(j)$ và tính $u^1_j$\;
+        Tính:
+        \begin{equation*}
+            l:=\max\left(l, p_j + \sum_{i=1, i \ne j}^{\sigma^1(j) - 1}p_i\right)
+        \end{equation*}\;
+        \If{$u_j^1 < l$}
+        {
+            $J0 := J0 \cup \{j\}$
+        }
+    }
+    \caption{Thủ tục IKR}
+    \label{algo:ikr}
+\end{algorithm}
+
+Để ý rằng các biến tương ứng với các item trong $J1$ và $J0$ phải nhận giá trị cố định trong nghiệm tối ưu của bài toán KP, và do đó mà bao gồm cả nghiệm của giá trị $l$ khi nó là nghiệm tối ưu. Tuy nhiên, khi cho trước một nghiệm khả thi $\widetilde{x}$ của giá trị $l$, ta chỉ quan tâm đến việc tìm một giá trị tốt hơn. Do đó, một định nghĩa mạnh hơn cho $J1$ và $0$ có thể thu được bằng cách thay thế các bất đẳng thức nghiêm ngặt trong Biểu thức \eqref{2.39} và \eqref{2.40}, tức là 
+\begin{align}
+    \label{eq:2.41}
+    J1 = \{ j\in N: u^0_j \leq l\} \\
+    \label{eq:2.42}
+    J0 = \{ j\in N: u^1_j \leq l\}
+\end{align}
+Nếu nó trả về một bài toán giảm mà không khả thi hoặc có một nghiệm tối ưu nhỏ hơn $l$, thì $\tilde{x}$ là nghiệm tối ưu của bài toán gốc.
+
+% \begin{example}
+    
+% \end{example}
+
+Để sử dụng các định nghĩa \eqref{eq:2.41}, \eqref{eq:2.42}, ta chỉ đơn giản thay thế dấu $<$ bằng dấu $\leq$ trong hai kiểm tra của thủ tục IKR. Với sự tinh chỉnh này, ta có $J1 = \varnothing$, $J0 = \{4, 5, 6, 7\}$. Giá trị nghiệm tối ưu của bài toán giảm là 
+
+\begin{algorithm}[!ht]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$J1, J0,l$}
+    \vspace{1em}
+    \For{$j:=0$ to $n$}
+    {
+        Tính 
+        \begin{equation*}
+            \bar{p}_j = \sum_{i = 1}^jp_j
+        \end{equation*}
+        và 
+        \begin{equation*}
+            \bar{w}_j = \sum_{i = 1}^jw_i
+        \end{equation*}
+    }
+    Tìm thông qua thủ tục tìm kiếm nhị phân $s$ mà $\bar{w}_{s-1} \leq c < \bar{w}_s$\;
+    $l:=\bar{p}_{s-1}$\;
+    $\bar{c}:=c-\bar{w}_{s-1}$\;
+    \For{$j:=s+1$ to $n$}
+    {
+        \If{$w_j \leq \bar{c}$}
+        {
+            $l:=l+p_j$\;
+            $\bar{c}:=\bar{c}-w_j$\;
+        }
+    }
+    \For{$j:=1$ to $s$}
+    {
+        Tìm thông qua thủ tục tìm kiếm nhị phân $\bar{s}$ mà $\bar{w}_{\bar{s}-1} \leq c + w_j < \bar{w}_{\bar{s}}$\;
+        $\bar{c}:= c + w_j - \bar{w}_{\bar{s} - 1}$\;
+        $u^0_j := \bar{p}_{\bar{s}-1} - p_j + \max(\left \lfloor \bar{c}p_{\bar{s} + 1} / w_{\bar{s} + 1} \right \rfloor, \left \lfloor p_{\bar{s}} - (w_{\bar{c}} - \bar{c})p_{\bar{s} - 1}/w_{\bar{s} - 1}\right \rfloor)$;\ 
+        $l := \max(l, \bar{p}_{\bar{s} - 1} - p_j)$\;
+    }
+    \For{$j:=s$ to $n$}
+    {
+        Tìm thông qua thủ tục tìm kiếm nhị phân $\bar{s}$ mà $\bar{w}_{\bar{s}-1} \leq c - w_j < \bar{w}_{\bar{s}}$\;
+        $\bar{c}:= c - w_j - \bar{w}_{\bar{s} - 1}$\;
+        $u^0_j := \bar{p}_{\bar{s}-1} + p_j + \max(\left \lfloor \bar{c}p_{\bar{s} + 1} / w_{\bar{s} + 1} \right \rfloor, \left \lfloor p_{\bar{s}} - (w_{\bar{c}} - \bar{c})p_{\bar{s} - 1}/w_{\bar{s} - 1}\right \rfloor)$;\ 
+        $l := \max(l, \bar{p}_{\bar{s} - 1} + p_j)$\;
+    }
+    $J1 := \{j \leq s: u^0_j \leq l\}$\; 
+    $J0 := \{j \geq s: u^1_j \leq l\}$\;
+    \caption{Thủ tục MTR}
+    \label{algo:mtr}
+\end{algorithm}
+
+\begin{example}
+    
+\end{example}
+
+\section{Thuật toán xấp xỉ}
+
+Trong phần trước, ta đã điểm qua thuật toán tham lam mà cho ta nghiệm xấp xỉ của bài toán KP với tỷ lệ hiệu suất xấu nhất là $\frac{1}{2}$ trong thời gian $O(n)$ cộng $O(n\log n)$ với sắp thứ tự khởi tạo. Một sự chính xác tốt hơn có thể đạt được thông qua lược đồ xấp xỉ mà cho ta thu được bất kỳ hiệu suất cố định cho trước nào. Trong phần này, chúng ta sẽ xem xét các lược đồ xấp xỉ thời gian đa thức (polynominal-time) và thời gian đa thức đầy đủ (fully polynominal-time) cho bài toán KP. Bên cạnh những kết quả tất định, xác suất của các thuật toán xấp xỉ cũng được trình bày.
+
+
+\subsection{Lược đồ xấp xỉ thời gian đa thức}
+
+Lược đồ 
+
+\begin{algorithm}[!ht]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j), M$}
+    \KwOutput{$z^g, X$}
+    \vspace{1em}
+    $z^g:= 0$\;
+    $\hat{c}:= c - \sum_{j \in M}w_j$\;
+    $X:= \varnothing$\;
+    \For{$j := 1$ to $n$}
+    {
+        \If{$j \notin M$ and $w_j \leq \hat{c}$}
+        {
+            $z^g:= z^g + p_j$\;
+            $\hat{c} := \hat{c} - w_j$\;
+            $X := X \cup \{j\}$\; 
+        }
+    }
+    \caption{Thủ tục GS}
+    \label{algo:gs}
+\end{algorithm}
+
+
+\begin{algorithm}[!ht]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z^h, X^h$}
+    \vspace{1em}
+    $z^h := 0$\;
+    \For{$M \subset \{1, \dots, n\}$ mà $|M| \leq k$ và $\sum_{j\in M}w_j \leq c$}
+    {
+        Gọi thủ tục GS\;
+        \If{$z^g + \sum_{j\in M}p_j > z^h$}
+        {
+            $z^h := z^g + \sum_{j\in M}p_j$\;
+            $X^h := X \cup M$\; 
+        }
+    }
+    \caption{Thủ tục $S(k)$}
+    \label{algo:sk}
+\end{algorithm}
+
+\begin{theorem}
+    Tỷ lệ hiệu suất trong trường hợp xấu nhất của $S(k)$ là $r(S(k)) = \dfrac{k}{k+1}$.
+\end{theorem}
+\begin{proof}
+    
+\end{proof}
+
+\begin{example}
+    
+\end{example}
+
+\subsection{Lược đồ xấp xỉ thời gian đa thức đầy đủ}
+
+\begin{algorithm}[!ht]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z^h, X^h$}
+    \vspace{1em}
+    Tìm kiếm phần tử chủ chốt $s$\;
+    \If{$\sum_{j=1}^{s-1} w_j = c$}
+    {
+        $z^h := \sum_{j=1}^{s-1}p_j$\;
+        $X^h:= \{1, \dots, s - 1\}$\;
+        Kết thúc thủ tục\;
+    }
+    $\widetilde{z} := \sum_{j=1}^sp_j$\;
+    \tcc{$\widetilde{z} / 2 \leq z < \widetilde{z}$ bởi vì $z > \max(\sum_{j=1}^{s-1}p_j, p_s)$}
+    $\delta := \widetilde{z}(\epsilon / 3)^2$\;
+    $S := \varnothing$\;
+    $T(0) := (L(0), P(0), W(0)) := (\varnothing, 0, 0)$\;
+    \tcc{Pha quy hoạch động}
+    \For{$i:=1$ to $q$}
+    {
+        $T(i) := $ ``undefined''\;
+    }
+    \For{$j:=1$ to n}
+    {
+        \If{$p_j \leq \epsilon \widetilde{z}/ 3$}
+        {
+            $S := S \cup \{j\}$\;
+        }
+        \Else
+        {
+            $\bar{p}_j := \left \lfloor p_j /\delta\right \rfloor$\;
+            \For{$i:= q - \bar{p}_j$ to 0 step -1}
+            {
+                \If{$T(i)\ne$``undefined'' và $W(i) + w_j \leq c$}
+                {
+                    \If{$T(i+\bar{p}_j) = $ ``undefined'' hoặc $W(i+\bar{p}_j) > W(i) + w_j$}
+                    {
+                        $T(i+\bar{p}_j) := (L(i) \cup \{i\}, P(i) + p_j, W(i) + w_j)$\;
+                    }
+                }
+            }
+        }
+    }
+    \tcc{Pha tham lam}
+    $z^h := 0$\;
+    \For{$i:=0$ to $q$}
+    {
+        \If{$T(i)\ne$``undefined''}
+        {
+            $\bar{z} := P(i) + \sum_{j \in A}p_j$, trong đó $A$ thu được bằng cách lắp đầy phần dư $c - W(i)$ với các phần tử của $S$ trong cách tham lam\;
+            \If{$\bar{z} > z^h$}
+            {
+                $z^h := \bar{z}$\;
+                $X^h := L(i) \cup A$\;
+            }
+        }
+    }
+    \caption{Thủ tục IK}
+    \label{algo:ik}
+\end{algorithm}
+
+\begin{theorem}
+    Với bất kỳ thể hiện của KP nào, $(z - z^h) / z \leq \epsilon$, trong đó $z$ là giá trị nghiệm tối ưu và $z^h$ là giá trị trả về bởi thủ tục $IK(\epsilon)$.
+\end{theorem}
+\begin{proof}
+    
+\end{proof}
+
+\begin{example}
+    
+\end{example}
+
+\subsection{Phân tích xác suất}
+
+
+\chapter*{PHỤ LỤC 2: THUẬT TOÁN RÚT TRÍCH CHO CÁC BÀI TOÁN CÓ KÍCH THƯỚC LỚN}
+\addcontentsline{toc}{chapter}{{\bf PHỤ LỤC 2: THUẬT TOÁN RÚT TRÍCH CHO CÁC BÀI TOÁN CÓ KÍCH THƯỚC LỚN}}
+
+\section{Thuật toán Balas-Zemel}
+
+\begin{algorithm}[h]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j), \vartheta$}
+    \KwOutput{$J1, C, (\bar{x}_j)$}
+    \vspace{1em}
+    $J1 := \varnothing$\;
+    $J0 := \varnothing$\;
+    $JC := \{1, \dots, n\}$\;
+    $\bar{c} := c$\;
+    $partition := $ ``no''\;
+    \While{$partition := $ ``no'' và $|JC| > \vartheta$}
+    {
+        % Xác định median $\lambda$ của các giá trị trong $R = \{p_j/w_j : j \in JC\}$\;
+        Xác định median $r_t$ của ba tỷ lệ đầu $p_j / w_j$ trong $JC$\;
+        $G := \{j \in JC: p_j/w_i > \lambda\}$\;
+        $L := \{j \in JC: p_j/w_i < \lambda\}$\;
+        $E := \{j \in JC: p_j/w_i = \lambda\}$\;
+        $c':=\sum_{j\in E}w_j$\;
+        $c'':= c' + \sum_{j\in E}w_j$\;
+        \If{$c' > \bar{c}$}
+        {
+            \tcc{giá trị $\lambda$ quá nhỏ}
+            $J0:=J0\cup L \cup E$\;
+            $JC := G$\;
+        }
+        \Else
+        {
+            \tcc{giá trị $\lambda$ quá lớn}
+            $J1:=J1\cup G \cup E$\;
+            $JC := L$\;
+            $\bar{c} := \bar{c} - c''$\;
+        }
+    }
+    \If{$|JC| \leq \vartheta$}
+    {
+        $C:=JC$\;
+        Sắp xếp các item trong $C$ giảm dần tương ứng với tỷ lệ $p_j/w_j$\;
+        Xác định phần tử chủ chốt $s$ và nghiệm $(\bar{x}_j)$ của nới lỏng liên tục thông qua việc sử dụng phương pháp Dantzig cho các phần tử trong $C$ với lượng phần dư $\bar{c}$.
+    }
+    \caption{Thủ tục BZC (Phần 1)}
+    \label{algo:bzc_part1}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \Else
+    {
+        Đặt $E = \{e_1, \dots, e_q\}$\;
+        $\sigma := \min\{j:\sum_{i=1}^jw_{e_i} > \bar{c} -c ;\}$\;
+        $s:= e_\sigma$\;
+        \For{với mỗi $j \in J1 \cup G \cup \{e_1, \dots, e_{\sigma - 1}$}
+        {
+            $\bar{x}_j = 1$\;
+        }
+        \For{với mỗi $j \in J1 \cup G \cup \{e_{\sigma+1}, \dots, e_{q}$}
+        {
+            $\bar{x}_j = 0$\;
+        }
+        $\bar{x}_s := (c - \sum_{j \in \{1, \dots, n\} \setminus \{s\}}w_j\bar{x}_j)/w_s$\;
+        Nếu có thể, trong phần thử giữa thứ 3 của $C$ và tương ứng tập phóng to $J1$, định nghĩa $C$ là một tập con được sắp thứ tự của $JC$ mà $|C| = \vartheta$ và chứa $s$.
+    }
+    \caption{Thủ tục BZC (Phần 2)}
+    \label{algo:bzc_part2}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$C, J1$}
+    \KwOutput{$z, ({x}_j)$}
+    \vspace{1em}
+    Cho trước một bài toán lõi xấp xỉ $C$ và một tập $J1$ gồm các item $j$ mà $x_j$ là cố định bằng 1, tìm một nghiệm xấp xỉ của $C$ bằng các quan hệ thống trị giữa các items.\;
+    Định nghĩa một nghiệm xấp xỉ tương ứng $(x_j)$ và giá trị của nó $z$ cho bài toán KP.\;
+    \caption{Thủ tục H}
+    \label{algo:h}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$C$}
+    \KwOutput{$J1', J0'$}
+    \vspace{1em}
+    Cố định nhiều biến của $C$ nhất có thể bằng cách áp dụng kiểm tra lược giản của thuật toán FPDHR và của thuật toán IKR để tính toán một chặn trên cho giá trị nghiệm liên tục khi các item không được sắp xếp thứ tự.\;
+    Định nghĩa các tập con $J1'$ và $J0'$ chưa các giá trị cố định tương ứng với 1 và 0.\;
+    \caption{Thủ tục R}
+    \label{algo:r}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j), \vartheta, \gamma$}
+    \KwOutput{$z, ({x}_j)$}
+    \vspace{1em}
+    Gọi thủ tục BZC\;
+    $z^c := \sum_{j=1}^np_j\bar{x}_j$\;
+    Gọi thủ tục H\;
+    \If{$z = \left \lfloor z^c \right \rfloor$}
+    {
+        Kết thúc thủ tục.\;
+    }
+    $C := \{1, \dots, n\}$\;
+    Gọi thủ tục R\;
+    $J1 := J1'$\;
+    $J0 := J0'$\;
+    $C := C \setminus (J1 \cup J0)$
+    \If{$|C| > \gamma$}
+    {
+        Gọi thủ tục H\;
+        \If{$z = \left \lfloor z^c \right \rfloor$}
+        {
+            Kết thúc thủ tục.\;
+        }
+        Gọi thủ tục R\;
+        $J1 := J1 \cup J1'$\;
+        $J0 := J0 \cup J0'$\;
+        $C := C \setminus (J1' \cup J0')$
+    }
+    Sắp xếp các item trong $C$ theo chiều giảm dần tỷ lệ $\frac{p_j}{w_j}$\;
+    Giải chính xác bài toán lõi thông qua thuật toán Zoltners (1978)\;
+    Định nghĩa các giá trị tương ứng của $z$ và $(x_j)$ cho bài toán KP\;
+    \caption{Thủ tục BZ}
+    \label{algo:bz}
+\end{algorithm}
+
+
+\section{Thuật toán Fayard-Plateau}
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j)$}
+    \KwOutput{$z, ({x}_j)$}
+    \vspace{1em}
+
+    $N := \{1, \dots, n\}$\;
+    Sử dụng một thủ tục tương tự như CRITICAL\_ITEM để quyết định phần tử chủ chốt $s$ và tập con $J1 \subset N$ mà trong nghiệm liên tục của bài toán KP, $x_j = 1$ với $j \in J1$.\;
+    $\bar{c} := c - \sum_{j \in J1}w_j$\;
+    $z^c := \sum_{j \in J1}p_j + \bar{c}p_s / w_s$\;
+    Áp dụng thuật toán tham lam (không cần sắp thứ tự) cho các item trong $N \setminus J1$ với phần dư $\bar{c}$ và đặt $(x_j) (j \in N \setminus J1)$ là nghiệm xấp xỉ tìm được.\;
+    $z := \sum_{j \in J1}p_j + \sum_{j \in N \setminus J1}p_jx_j$\;
+    \If{$z = \left \lfloor z^c\right \rfloor$}{
+        Kết thúc thủ tục\;
+    }
+    Áp dụng thuật toán giảm FPDHR, định nghĩa các tập $J1'$ và $J0'$.\;
+    Sắp xếp các item trong $C$ tương ứng với các giá trị giảm dần của $|\widetilde{p}| = |p_j - w_jp_s / w_s|$\;
+    Giải chính xác bài toán tinh giản thông qua một kỹ thuật lặp;\;
+    Định nghĩa các giá trị tương ứng của $z$ và $(x_j)$ cho bài toán KP.
+    \caption{Thủ tục FP}
+    \label{algo:fp}
+\end{algorithm}
+
+\section{Thuật toán Martello-Toth}
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j), \vartheta, \alpha, \beta, \eta$}
+    \KwOutput{$J1, C, J0$}
+    \vspace{1em}
+    $J1 := \varnothing$\;
+    $J0 := \varnothing$\;
+    $C := \{1, \dots, n\}$\;
+    $\bar{c} := c$\;
+    $k:=0$\;
+    $\lambda := M3(C)$\;
+    \While{$|C| > (1 + \beta)\vartheta$ và $k < \eta$}
+    {
+        $G:= \{j \in C: p_j / w_j > \lambda\}$\;
+        $L:=\{j\in C: p_j/w_j < \lambda\}$\;
+        $E:=\{j\in C: p_j/w_j = \lambda\}$\;
+        $c' := \sum_{i \in G}w_j$
+        $c'' := c' + \sum_{i \in E}w_j$\;
+        \If{$c' \leq \bar{c}<c''$}
+        {
+            \If{$|E| \geq (1 - \alpha)\vartheta$}
+            {
+                Đặt $E = \{e_1, \dots, e_q\}$\;
+                $\sigma := \min\{j : \sum_{i=1}^jw_{e_i} > \bar{c} - c'\}$\;
+                $s := e_\sigma$\;
+                $C:= \{e_r, \dots, e_t$, với $r, t$ là $t - r + 1$ gần với $\vartheta$ nhất có thể và $(t+r)/ 2$ gần với $s$ nhất có thể\;
+                $J0 := J0 \cup L \cup \{e_{t+1}, \dots, e_q\}$\;
+                $J1 := J1 \cup L \cup \{e_{1}, \dots, e_{r- 1}\}$\;
+            }
+            \Else
+            {
+                \If{$|G \cup E| < \vartheta$}
+                {
+                    $\lambda := M3(L)$\;
+                }
+                \Else
+                {
+                    $\lambda := M3(G)$\;
+                }
+            }
+        }    
+    \dots}
+    \caption{Thủ tục CORE (Phần 1)}
+    \label{algo:core_part1}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \dots
+    {\Else
+        {
+            \If{$c' > \bar{c}$}
+            {
+                \If{$|G| < \vartheta$}
+                {
+                    $\lambda := M3(L)$\;
+                }
+                \Else
+                {
+                    $J0 := J0 \cup L \cup E$\;
+                    $C:=G$\;
+                    $\lambda := M3(C)$\;
+                }
+            }
+            \Else
+            {
+                \If{$|L| < (1-\alpha)\vartheta$}
+                {
+                    $\lambda := M3(G)$\;
+                }
+                \Else
+                {
+                    $J1 := J1 \cup G \cup E$\;
+                    $C:=L$\;
+                    $\bar{c} := \bar{c} - c''$\;
+                    $\lambda := M3(C)$\;
+                }
+            }
+        }
+        $k:=k+1$
+    }
+    \caption{Thủ tục CORE (Phần 2)}
+    \label{algo:core_part2}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j), C, J1, bound$}
+    \KwOutput{$(\hat{x}_j), u$}
+    \vspace{1em}
+    Định nghĩa thể hiện con KP' chưa các item trong $C$ với lượng dư $c - \sum_{j \in J1}w_j$.\;
+    \If{bound = ``no''}{
+        Gọi thủ tục MT1 cho KP'.\;
+    }  
+    \Else
+    {
+        Gọi thủ tục MT1 cho KP' với $u = U_6$\;
+    }
+    Đặt $(\hat{x}_j)$ là vector nghiệm trả về bởi thủ tục MT1.
+    \caption{Thủ tục MT1'}
+    \label{algo:mt1_prime}
+\end{algorithm}
+
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j), z^h, J1, C, J0$}
+    \KwOutput{$\overline{J1}, \overline{J0}$}
+    \vspace{1em}
+
+    \tcc{Ta giả sử rằng các item trong $C$ là $1, 2, \dots, f (f = |C|)$, được sắp thứ tự tăng dần theo tỷ lệ $p_j / w_j$}
+    $\bar{c}:= c - \sum_{j \in J1}w_j$\;
+    $\bar{p}:= \sum_{j \in J1}p_j$\;
+    \For{$j := 1$ to $f$}
+    {
+        Tính:
+        \begin{equation}
+            \bar{w}_j := \sum_{i = 1}^jw_i
+        \end{equation}
+        và
+        \begin{equation}
+            \bar{p}_j = \sum_{i = 1}^jp_i
+        \end{equation}\;
+    }
+    Tìm thông qua thủ tục tìm kiếm nhị phân $s \in C$ mà $\bar{w}_{s - 1} \leq \bar{c} < \bar{w}_s$\;
+    \For{với mỗi $j \in J1 \cup \{1, \dots, s\}$}
+    {
+        \If{$\bar{c} + w_j < \bar{w}_f$}
+        {
+            Tìm thông qua thủ tục tìm kiếm nhị phân $\bar{s} \in C$ mà $\bar{w}_{\bar{s} - 1} \leq \bar{c} + w_j < \bar{w}_{\bar{s}}$\;
+            $\bar{\bar{c}} := \bar{c} + w_j - \bar{w}_{\bar{s} - 1}$\;
+            $u^0_j := \bar{p} - p_j + \bar{p}_{\bar{s} - 1} + \max(\left \lfloor \bar{\bar{c}}p_{\bar{s}+1}/w_{\bar{s} + 1}\right \rfloor, \left \lfloor p_{\bar{s}} - (w_{\bar{s}} - \bar{\bar{c}})p_{\bar{s}-1} / w_{\bar{s} - 1}\right \rfloor)$\;
+            $z^h := \max(z^h, \bar{p} - p_j + \bar{p}_{\bar{s} - 1}$\;
+        }
+        \Else
+        {
+            $u^0_j := \bar{p} - p_j + \bar{p}_{\bar{s} - 1} + \left \lfloor (\bar{c} + w_j - \bar{w}_f)p_f / w_f\right \rfloor$\;
+            $z^h := \max(z^h, \bar{p} - p_j + \bar{p}_f)$\;
+        }
+    }   
+    \caption{Thủ tục MTR' (Phần 1)}
+    \label{algo:mtr_prime_part1}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \For{với mỗi $j \in J0 \cup \{s, \dots, f\}$}
+    {
+        \If{$\bar{c} - w_j \geq \bar{w}_f$}
+        {
+            Tìm thông qua thủ tục tìm kiếm nhị phân $\bar{s} \in C$ mà $\bar{w}_{\bar{s} - 1} \leq \bar{c} - w_j < \bar{w}_{\bar{s}}$\;
+            $\bar{\bar{c}} := \bar{c} - w_j - \bar{w}_{\bar{s} - 1}$\;
+            $u^1_j := \bar{p} + p_j + \bar{p}_{\bar{s} - 1} + \max(\left \lfloor \bar{\bar{c}}p_{\bar{s}+1}/w_{\bar{s} + 1}\right \rfloor, \left \lfloor p_{\bar{s}} - (w_{\bar{s}} - \bar{\bar{c}})p_{\bar{s}-1} / w_{\bar{s} - 1}\right \rfloor)$\;
+            $z^h := \max(z^h, \bar{p} + p_j + \bar{p}_{\bar{s} - 1})$\;
+        }
+        \Else
+        {
+             $u^1_j := \left \lfloor \bar{p} + p_j + (\bar{c} - w_j)p_1 / w_1\right \rfloor$\;
+            \If{$\bar{c} - w_j \geq 0$}
+            {
+                $z^h := \max(z^h, \bar{p} + p_j$\;
+            }
+        }
+    }
+    $\overline{J0} := \{j \in J0 \cup \{s, \dots, f\}: u_j^1 \leq z^h\}$\;
+    $\overline{J1} := \{j \in J1 \cup \{1, \dots, s\}: u_j^0 \leq z^h\}$\; 
+    \caption{Thủ tục MTR' (Phần 2)}
+    \label{algo:mtr_prime_part2}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \DontPrintSemicolon
+    \vspace{1em}
+    \KwInput{$n, c, (p_j), (w_j), \vartheta, \alpha, \beta, \eta$}
+    \KwOutput{$z, (x_j)$}
+    \vspace{1em}
+    \For{$j:=1$ to $n$}
+    {
+        $x_j: = 0$\;
+    }
+    \tcc{Bước 1:}
+    Gọi thủ tục CORE\;
+    \If{$|C| \leq (1 - \alpha)n$}
+    {
+        Sắp xếp các item trong C giảm dần theo tỷ lệ $p_j / w_j$\;
+        \tcc{Bước 2:}
+        Gán $bound =$``yes''\;
+        Gọi thủ tục MT1'\;
+        $z^h := \sum_{j \in J1}p_j + \sum_{j \in C}p_j\hat{x}_j$\;
+        \If{$z^h = u$}
+        {
+            \For{với mõi $j \in J1 \cup \{k \in C: \hat{x}_k = 1\}$}
+            {
+                $x_j := 1$\;
+            }
+        }
+        \tcc{Bước 3:}
+        \Else
+        {
+            Gọi thủ tục MTR'\;
+            \If{$\overline{J1} \supseteq J1$ và $\overline{J0} \supseteq J0$}
+            {
+                \For{với mõi $j \in J1 \cup \{k \in C: \hat{x}_k = 1\}$}
+                {
+                    $x_j := 1$\;
+                }
+            }
+            \tcc{Bước 4:}
+            \Else
+            {
+                $C:= \{1, \dots, n\} \setminus (\overline{J1} \cup \overline{J0})$\;
+                Sắp xếp các item trong C giảm dần theo tỷ lệ $p_j / w_j$\;
+                Gán $bound =$``no''\;
+                $J1 := \overline{J1} $\;
+                Gọi thủ tục MT1'
+                \For{với mõi $j \in \overline{J1} \cup \{k \in C: \hat{x}_k = 1\}$}
+                {
+                    $x_j := 1$\;
+                }
+            }
+        }   
+    }
+    \caption{Thủ tục MT2 (Phần 1)}
+    \label{algo:mt2_part1}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+    \tcc{Nghiệm chuẩn}
+    \Else
+    {
+        Sắp xếp các item giảm dần theo tỷ lệ $p_j / w_j$\;
+        Gọi thủ tục MTR\;
+        $z^h := l$\;
+        $C:= \{1, \dots, n\} \setminus (J1 \cup J0)$\;
+        Gán $bound =$``no''\;
+        Gọi thủ tục MT1'\;
+        \For{với mõi $j \in J1 \cup \{k \in C: \hat{x}_k = 1\}$}
+        {
+            $x_j := 1$\;
+        }
+    }
+    $z := \sum_{j = 1}^np_jx_j$\;
+    \If{$z < z^h$}
+    {
+        Định nghĩa vector nghiệm $(x_j)$ tương ứng với $z^h$\;
+        $z := z^h$\;
+    }
+    \caption{Thủ tục MT2 (Phần 2)}
+    \label{algo:mt2_part2}
+\end{algorithm}
